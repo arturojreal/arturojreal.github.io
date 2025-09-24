@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arturo J. Real - Artist and Technologist</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <!-- Hiya, curious! -->
+    <!-- Accessibility Skip Link -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <!-- High Contrast Toggle
+    <button id="contrast-toggle" class="accessibility-btn" aria-label="Toggle high contrast mode">
+        <span aria-hidden="true">🌓</span>
+    </button> -->
+
+    <!-- Reduced Motion Toggle
+    <button id="motion-toggle" class="accessibility-btn" aria-label="Toggle reduced motion">
+        <span aria-hidden="true">⏸️</span>
+    </button> -->
+
+    <!-- Debug panel now hidden by default, accessible via D key -->
+
+    <!-- Particle Debug Panel -->
+    <div id="particle-debug" class="debug-panel resizable hidden">
+        <div class="debug-header">
+            <h3>🎛️ Debug Controls</h3>
+            <div class="header-controls">
+                <button id="debug-minimize" class="debug-minimize">−</button>
+                <button id="debug-close" class="debug-close">×</button>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+        <div class="debug-content">
+            <!-- MODEL LOADING & SELECTION -->
+            <h3>📁 Model Loading</h3>
+            <div class="control-group">
+                <label>Currently Active:</label>
+                <div class="control-input-group">
+                    <span id="current-model-display" class="model-display">Default GLB (arturo_site.glb)</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="load-model">Load New Model:</label> <!-- Upload GLB/GLTF or PLY files -->
+                <div class="control-input-group">
+                    <input type="file" id="load-model" accept=".glb,.gltf,.ply" />
+                    <button id="apply-model" class="apply-btn" disabled>Apply Model</button>
+                </div>
+            </div>
+            
+            <!-- LOADED MODELS LIST -->
+            <h3>📋 Loaded Models</h3>
+            <div id="loaded-models-list" class="models-list">
+                <!-- Models will be populated here -->
+            </div>
+
+
+            <!-- BASIC PARTICLE SETTINGS -->
+            <h3>⚙️ Basic Particle Settings</h3>
+            <div class="control-group">
+                <label for="particle-size">Size:</label>
+                <div class="control-input-group">
+                    <input type="range" id="particle-size" min="0.001" max="5.0" step="0.001" value="0.4">
+                    <input type="number" id="particle-size-num" min="0.001" max="5.0" step="0.001" value="0.4">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="particle-opacity">Opacity:</label>
+                <div class="control-input-group">
+                    <input type="range" id="particle-opacity" min="0.01" max="1.0" step="0.01" value="0.9">
+                    <input type="number" id="particle-opacity-num" min="0.01" max="1.0" step="0.01" value="0.9">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="particle-density">Density:</label>
+                <div class="control-input-group">
+                    <input type="range" id="particle-density" min="500" max="100000" step="500" value="42000">
+                    <input type="number" id="particle-density-num" min="500" max="100000" step="500" value="42000">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="scale-factor">Scale:</label>
+                <div class="control-input-group">
+                    <input type="range" id="scale-factor" min="0.1" max="50" step="0.1" value="12">
+                    <input type="number" id="scale-factor-num" min="0.1" max="50" step="0.1" value="12">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="model-position-x">Position X:</label>
+                <div class="control-input-group">
+                    <input type="range" id="model-position-x" min="-10" max="10" step="0.1" value="0">
+                    <input type="number" id="model-position-x-num" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="model-position-y">Position Y:</label>
+                <div class="control-input-group">
+                    <input type="range" id="model-position-y" min="-10" max="10" step="0.1" value="0">
+                    <input type="number" id="model-position-y-num" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="model-position-z">Position Z:</label>
+                <div class="control-input-group">
+                    <input type="range" id="model-position-z" min="-10" max="10" step="0.1" value="0">
+                    <input type="number" id="model-position-z-num" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="particle-effects-enabled" checked> Enable Particle Effects
+                </label>
+            </div>
+            
+            <!-- PARTICLE ROTATION CONTROLS -->
+            <div class="control-group">
+                <label for="model-rotation-x">Particle Rotation X:</label>
+                <div class="control-input-group">
+                    <input type="range" id="model-rotation-x" min="-180" max="180" step="5" value="0">
+                    <input type="number" id="model-rotation-x-num" min="-180" max="180" step="5" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="model-rotation-y">Particle Rotation Y:</label>
+                <div class="control-input-group">
+                    <input type="range" id="model-rotation-y" min="-180" max="180" step="5" value="0">
+                    <input type="number" id="model-rotation-y-num" min="-180" max="180" step="5" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="model-rotation-z">Particle Rotation Z:</label>
+                <div class="control-input-group">
+                    <input type="range" id="model-rotation-z" min="-180" max="180" step="5" value="0">
+                    <input type="number" id="model-rotation-z-num" min="-180" max="180" step="5" value="0">
+                </div>
+            </div>
+
+            <!-- 3D MODEL SPECIFIC CONTROLS -->
+            <h3>🎭 3D Model Controls</h3>
+            <div class="control-group">
+                <label for="solid-model-scale">3D Model Scale:</label>
+                <div class="control-input-group">
+                    <input type="range" id="solid-model-scale" min="0.1" max="5" step="0.1" value="1">
+                    <input type="number" id="solid-model-scale-num" min="0.1" max="5" step="0.1" value="1">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="solid-model-position-x">3D Model Position X:</label>
+                <div class="control-input-group">
+                    <input type="range" id="solid-model-position-x" min="-10" max="10" step="0.1" value="0">
+                    <input type="number" id="solid-model-position-x-num" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="solid-model-position-y">3D Model Position Y:</label>
+                <div class="control-input-group">
+                    <input type="range" id="solid-model-position-y" min="-10" max="10" step="0.1" value="0">
+                    <input type="number" id="solid-model-position-y-num" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="solid-model-position-z">3D Model Position Z:</label>
+                <div class="control-input-group">
+                    <input type="range" id="solid-model-position-z" min="-10" max="10" step="0.1" value="0">
+                    <input type="number" id="solid-model-position-z-num" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="solid-model-rotation-x">3D Model Rotation X:</label>
+                <div class="control-input-group">
+                    <input type="range" id="solid-model-rotation-x" min="-180" max="180" step="5" value="0">
+                    <input type="number" id="solid-model-rotation-x-num" min="-180" max="180" step="5" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="solid-model-rotation-y">3D Model Rotation Y:</label>
+                <div class="control-input-group">
+                    <input type="range" id="solid-model-rotation-y" min="-180" max="180" step="5" value="0">
+                    <input type="number" id="solid-model-rotation-y-num" min="-180" max="180" step="5" value="0">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="solid-model-rotation-z">3D Model Rotation Z:</label>
+                <div class="control-input-group">
+                    <input type="range" id="solid-model-rotation-z" min="-180" max="180" step="5" value="0">
+                    <input type="number" id="solid-model-rotation-z-num" min="-180" max="180" step="5" value="0">
+                </div>
+            </div>
+
+            <!-- COLOR CONTROLS -->
+            <h3>🎨 Color Controls</h3>
+            <div class="control-group">
+                <label for="custom-color">Model Color Override:</label>
+                <div class="control-input-group">
+                    <input type="color" id="custom-color" value="#ffffff">
+                    <input type="text" id="custom-color-hex" placeholder="#ffffff" maxlength="7">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="use-custom-color"> Use Custom Color
+                </label>
+            </div>
+
+            <!-- CLASSIC PARTICLE INTERACTION -->
+            <h3>🎯 Classic Interaction System</h3>
+            <p class="control-note">💡 Traditional mouse/touch particle dispersion</p>
+            <div class="control-group">
+                <label for="interaction-radius">Touch Radius:</label>
+                <div class="control-input-group">
+                    <input type="range" id="interaction-radius" min="0.1" max="20.0" step="0.1" value="2.8">
+                    <input type="number" id="interaction-radius-num" min="0.1" max="20.0" step="0.1" value="2.8">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="disperse-force">Disperse Force:</label>
+                <div class="control-input-group">
+                    <input type="range" id="disperse-force" min="0.01" max="5.0" step="0.01" value="0.15">
+                    <input type="number" id="disperse-force-num" min="0.01" max="5.0" step="0.01" value="0.15">
+                </div>
+            </div>
+            
+            <!-- ANIMATION CONTROLS -->
+            <h3>🔄 Animation</h3>
+            <div class="control-group">
+                <label for="rotation-speed">Rotation Speed:</label> <!-- Auto-rotation speed of entire model -->
+                <div class="control-input-group">
+                    <input type="range" id="rotation-speed" min="0.001" max="0.02" step="0.001" value="0.003">
+                    <input type="number" id="rotation-speed-num" min="0.001" max="0.02" step="0.001" value="0.003">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="easing-zone">Easing Zone:</label> <!-- Smoothness of particle return animation -->
+                <div class="control-input-group">
+                    <input type="range" id="easing-zone" min="0.05" max="0.5" step="0.05" value="0.3">
+                    <input type="number" id="easing-zone-num" min="0.05" max="0.5" step="0.05" value="0.3">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="rotation-min">Rotation Min (degrees):</label> <!-- Minimum rotation angle -->
+                <div class="control-input-group">
+                    <input type="range" id="rotation-min" min="-180" max="0" step="5" value="-10">
+                    <input type="number" id="rotation-min-num" min="-180" max="0" step="5" value="-10">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="rotation-max">Rotation Max (degrees):</label> <!-- Maximum rotation angle -->
+                <div class="control-input-group">
+                    <input type="range" id="rotation-max" min="0" max="180" step="5" value="70">
+                    <input type="number" id="rotation-max-num" min="0" max="180" step="5" value="70">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="tone-mapping-exposure">Tone Mapping Exposure:</label> <!-- HDR brightness/exposure control -->
+                <div class="control-input-group">
+                    <input type="range" id="tone-mapping-exposure" min="0.1" max="2.0" step="0.01" value="0.74">
+                    <input type="number" id="tone-mapping-exposure-num" min="0.1" max="2.0" step="0.01" value="0.74">
+                </div>
+            </div>
+
+            <!-- BLOOM POST-PROCESSING -->
+            <h3>💫 Bloom Effects</h3>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="bloom-enabled" checked> Enable Bloom <!-- Toggle bloom post-processing -->
+                </label>
+            </div>
+            <div class="control-group">
+                <label for="bloom-threshold">Threshold:</label> <!-- Brightness level for bloom to activate -->
+                <div class="control-input-group">
+                    <input type="range" id="bloom-threshold" min="0" max="1" step="0.01" value="0.2">
+                    <input type="number" id="bloom-threshold-num" min="0" max="1" step="0.01" value="0.2">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="bloom-strength">Strength:</label> <!-- Intensity of bloom effect -->
+                <div class="control-input-group">
+                    <input type="range" id="bloom-strength" min="0" max="3" step="0.1" value="0.8">
+                    <input type="number" id="bloom-strength-num" min="0" max="3" step="0.1" value="0.8">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="bloom-radius">Radius:</label> <!-- Size/spread of bloom effect -->
+                <div class="control-input-group">
+                    <input type="range" id="bloom-radius" min="0" max="1" step="0.01" value="0.4">
+                    <input type="number" id="bloom-radius-num" min="0" max="1" step="0.01" value="0.4">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="bloom-direction-x">Direction X:</label> <!-- Horizontal bloom direction bias -->
+                <div class="control-input-group">
+                    <input type="range" id="bloom-direction-x" min="0.0" max="1.0" step="0.01" value="0.97">
+                    <input type="number" id="bloom-direction-x-num" min="0.0" max="1.0" step="0.01" value="0.97">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="bloom-direction-y">Direction Y:</label> <!-- Vertical bloom direction bias -->
+                <div class="control-input-group">
+                    <input type="range" id="bloom-direction-y" min="0.0" max="1.0" step="0.01" value="0.18">
+                    <input type="number" id="bloom-direction-y-num" min="0.0" max="1.0" step="0.01" value="0.18">
+                </div>
+            </div>
+            <!-- ACTION BUTTONS -->
+            <h3>⚙️ Actions</h3>
+            <button id="export-params" class="export-btn">Export Parameters</button> <!-- Save current settings to clipboard -->
+            <button id="reset-params" class="reset-btn">Reset to Defaults</button> <!-- Restore default values -->
+            <button id="clear-models" class="clear-btn">Clear All Models</button> <!-- Remove all loaded models and reset scene -->
+        </div>
+    </div>
+
+    <!-- Debug panel accessible via D key only -->
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main id="main-content" class="main-container">
+        
+        <!-- Home Page -->
+        <section id="home-page" class="page active" role="main">
+            <!-- 3D Canvas Container -->
+            <div id="canvas-container" class="canvas-container" role="img" aria-label="Interactive 3D point cloud representation of Arturo">
+                <canvas id="three-canvas"></canvas>
+            </div>
+
+            <!-- Name and Navigation -->
+            <div class="name-section">
+                <h1 class="main-name" id="main-name">Arturo J. Real</h1>
+                
+                <!-- Mobile Navigation (horizontal buttons) -->
+                <div class="mobile-nav" role="navigation" aria-label="Portfolio navigation">
+                    <button class="mobile-nav-btn connect-btn" id="connect-btn">
+                        <span class="btn-icon">🤝</span>
+                        <span class="btn-text">Let's connect!</span>
+                    </button>
+                    <button class="mobile-nav-btn nav-btn" data-page="photography">
+                        <span class="btn-text">Photography</span>
+                    </button>
+                    <button class="mobile-nav-btn nav-btn" data-page="film">
+                        <span class="btn-text">Film</span>
+                    </button>
+                    <button class="mobile-nav-btn nav-btn" data-page="vfx">
+                        <span class="btn-text">VFX</span>
+                    </button>
+                    <button class="mobile-nav-btn nav-btn" data-page="projects">
+                        <span class="btn-text">Projects</span>
+                    </button>
+                    <button class="mobile-nav-btn nav-btn" data-page="about">
+                        <span class="btn-text">About</span>
+                    </button>
+                </div>
+                
+                <!-- Mobile Social Grid (direct access to social platforms) -->
+                <div class="mobile-social-grid" role="navigation" aria-label="Social media links">
+                    <!-- Social platform buttons will be generated by JavaScript -->
+                </div>
+                
+                <!-- Desktop Navigation (glass navbar) -->
+                <nav class="main-nav desktop-nav" role="navigation" aria-label="Portfolio navigation">
+                    <button class="nav-btn" data-page="photography" aria-describedby="photo-desc">
+                        Photography
+                    </button>
+                    <button class="nav-btn" data-page="film" aria-describedby="film-desc">
+                        Film
+                    </button>
+                    <button class="nav-btn" data-page="vfx" aria-describedby="vfx-desc">
+                        VFX
+                    </button>
+                    <button class="nav-btn" data-page="projects" aria-describedby="projects-desc">
+                        Projects
+                    </button>
+                    <button class="nav-btn" data-page="about" aria-describedby="about-desc">
+                        About
+                    </button>
+                </nav>
+                
+                <!-- Desktop Social Media Links -->
+                <div class="social-links desktop-social" role="navigation" aria-label="Social media links">
+                    <a href="https://bsky.app/profile/arturojreal.bsky.social" target="_blank" rel="noopener noreferrer" aria-label="BlueSky" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Bluesky</title><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.018-.276.037-.414.058-2.671-.297-5.569.628-6.383 3.364C.378 17.705 0 22.665 0 23.353c0 .688.139 1.86.902 2.202.659.299 1.664.621 4.3-1.24C7.954 22.373 10.913 18.434 12 16.32c1.087 2.114 4.046 6.053 6.798 7.995 2.636 1.861 3.641 1.539 4.3 1.24.763-.342.902-1.514.902-2.202 0-.688-.378-5.648-.624-6.477-.815-2.736-3.712-3.661-6.383-3.364-.138-.021-.276-.04-.414-.058.14.017.279.036.415.056 2.67.296 5.568-.628 6.383-3.364.246-.829.624-5.789.624-6.479 0-.688-.139-1.86-.902-2.202-.659-.299-1.664-.621-4.3 1.24C16.046 4.747 13.087 8.686 12 10.8Z"/></svg>
+                    </a>
+                    <a href="https://discord.gg/dsnZ9NFDsQ" target="_blank" rel="noopener noreferrer" aria-label="Discord" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0190 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/></svg>
+                    </a>
+                    <a href="mailto:arturojreal+contact@gmail.com" aria-label="Email" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Mail</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h1.909L12 10.09l8.455-6.269h1.909c.904 0 1.636.732 1.636 1.636Z"/></svg>
+                    </a>
+                    <a href="https://facebook.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Facebook</title><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg>
+                    </a>
+                    <a href="https://github.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    </a>
+                    <a href="https://instagram.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Instagram</title><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="https://ko-fi.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="Ko-fi" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Ko-fi</title><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.033 11.596c.049 4.271 3.759 4.825 3.759 4.825s8.665.456 13.888-.062c5.223-.519 6.807-3.505 6.807-3.505s.468-4.533-.584-9.059zM5.723 12.468c-.79.001-1.533.266-2.101.75-.568.484-.91 1.146-.967 1.875-.11 1.411.112 2.734.112 2.734.652-.648 1.49-1.018 2.378-1.05.888-.032 1.756.283 2.459.895.703.612 1.178 1.473 1.347 2.442.169.969-.044 1.979-.603 2.868.235.023.464.034.693.034.23 0 .459-.011.693-.034-.559-.889-.772-1.899-.603-2.868.169-.969.644-1.83 1.347-2.442.703-.612 1.571-.927 2.459-.895.888.032 1.726.402 2.378 1.05 0 0 .222-1.323.112-2.734-.057-.729-.399-1.391-.967-1.875a3.635 3.635 0 00-2.101-.75c-.846 0-1.664.311-2.31.878-.645.567-1.076 1.35-1.217 2.21-.141-.86-.572-1.643-1.217-2.21-.646-.567-1.464-.878-2.31-.878z"/></svg>
+                    </a>
+                    <a href="https://linkedin.com/in/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://patreon.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="Patreon" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Patreon</title><path d="M0 .48v23.04h4.22V.48zm15.385 0c-4.764 0-8.641 3.88-8.641 8.65 0 4.755 3.877 8.623 8.641 8.623 4.75 0 8.615-3.868 8.615-8.623C24 4.36 20.136.48 15.385.48z"/></svg>
+                    </a>
+                    <a href="https://tiktok.com/@arturojreal" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TikTok</title><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                    </a>
+                    <a href="https://twitch.tv/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="Twitch" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
+                    </a>
+                    <a href="https://x.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>X</title><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+                    </a>
+                    <a href="https://youtube.com/@arturojreal" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
+                
+                <!-- Screen Reader Descriptions -->
+                <div class="sr-only">
+                    <p id="photo-desc">View photography portfolio with featured works</p>
+                    <p id="film-desc">View film portfolio with featured projects</p>
+                    <p id="vfx-desc">View VFX portfolio with interactive 3D models</p>
+                    <p id="projects-desc">View miscellaneous and in-progress projects</p>
+                    <p id="about-desc">Read about Arturo</p>
+                </div>
+            </div>
+
+            <!-- Instructions for interaction
+            <div class="interaction-hint" aria-live="polite">
+                <p>Move your mouse or finger to interact with the particles</p>
+            </div> -->
+        </section>
+
+        <!-- Photography Page -->
+        <section id="photography-page" class="page portfolio-page" role="main">
+            <header class="page-header">
+                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <h1>My photography</h1>
+            </header>
+            
+            <div class="portfolio-grid" role="list" aria-label="Photography portfolio items">
+                <!-- Photography items will be generated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Film Page -->
+        <section id="film-page" class="page portfolio-page" role="main">
+            <header class="page-header">
+                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <h1>My films and videos</h1>
+            </header>
+            
+            <div class="portfolio-grid" role="list" aria-label="Film portfolio items">
+                <!-- Film items will be generated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- VFX Page -->
+        <section id="vfx-page" class="page portfolio-page" role="main">
+            <header class="page-header">
+                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <h1>My 3D and VFX work</h1>
+            </header>
+            
+            <div class="portfolio-grid vfx-grid" role="list" aria-label="VFX portfolio items">
+                <!-- VFX items will be generated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Projects Page -->
+        <section id="projects-page" class="page portfolio-page" role="main">
+            <header class="page-header">
+                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <h1>Projects I've worked on</h1>
+            </header>
+            <div class="portfolio-grid" role="list" aria-label="Project items">
+                <!-- Intentionally left empty for now -->
+            </div>
+        </section>
+
+        <!-- About Page -->
+        <section id="about-page" class="page portfolio-page" role="main">
+            <header class="page-header">
+                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <h1>About me</h1>
+            </header>
+            <div class="about-wrapper">
+                <div class="about-grid" aria-label="About photo grid">
+                    <!-- About images populated by JavaScript -->
+                </div>
+                <article class="about-text" aria-label="About Me">
+<p>Arturo J. Real is an artist and a technologist. He was born and raised in Venezuela, and lives in the moment.</p>
+<p>When there's not a camera in his hands, he prefers an instrument or a Nutella croissant as a temporary replacement.</p>
+<p>He’s the worst at speaking in the third person and so I’ll switch it up and thank you for visiting this About page!</p>
+<p>In May 2021, I wrapped up my fourth year working as a Technologist in Production at CS50. CS50 is an on-campus and online introductory course on computer science taught at Harvard University, Yale University, and hundreds of cities around the world. </p>
+<p>I took CS50 at The Idea Center in Miami, Florida while I was in college. After graduating, I worked alongside the course instructors and production team to produce hundreds of lectures, events, and course materials. Together, we built upon the course experience for the in-person audience of students at Harvard and Yale, as well as the course’s massive community of students and educators online. Inspired by all I’ve learned and experienced since my move to Cambridge, I paved the way for my own flavor of storytelling and educating on YouTube: https://youtube.com/c/ArturoJReal </p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Mobile Social Connect Page -->
+        <section id="connect-page" class="page portfolio-page hidden" role="main">
+            <header class="page-header">
+                <button class="back-btn" onclick="navigateToPage('home')">
+                    <span aria-hidden="true">←</span> Back to Home
+                </button>
+                <h1>Let's connect!</h1>
+            </header>
+            <div class="connect-wrapper">
+                <div class="social-grid" role="navigation" aria-label="Social media platforms">
+                    <!-- Social links will be populated here by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Error Modal -->
+    <div id="error-modal" class="modal hidden" role="dialog" aria-labelledby="error-title" aria-describedby="error-desc">
+        <div class="modal-content">
+            <h2 id="error-title">WebGL Not Supported</h2>
+            <p id="error-desc">Your device doesn't support WebGL. You can still navigate the portfolio using the text links below.</p>
+            <button class="btn btn--primary" onclick="closeErrorModal()">Continue</button>
+        </div>
+    </div>
+
+    <!-- Photo Lightbox Modal -->
+    <div id="photo-lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+        <div class="lightbox__backdrop"></div>
+        <div class="lightbox__content" role="document">
+            <button class="lightbox__close" aria-label="Close">✕</button>
+            <div class="lightbox__media">
+                <img id="lightbox-img" alt="Expanded photo" />
+            </div>
+            <div id="lightbox-info" class="lightbox__info" aria-live="polite">
+                <h3 id="lightbox-title" class="item-title"></h3>
+                <p id="lightbox-desc" class="item-description"></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "photography": [
+    {
+      "id": "nature-1",
+      "title": "Nature",
+      "description": "The great outdoors, mostly.",
+      "image": "images/20170904-DSC02045.webp",
+      "tags": ["landscape", "outdoor"],
+      "date": "2023-08"
+    },
+    {
+      "id": "street-1", 
+      "title": "Street",
+      "description": "Sometimes it feels easier to be a fly on the wall.",
+      "image": "images/20170917-DSC02748.webp",
+      "tags": ["urban", "candid"],
+      "date": "2023-09"
+    },
+    {
+      "id": "portrait-1",
+      "title": "Portrait", 
+      "description": "Faces.",
+      "image": "images/art1.webp",
+      "tags": ["people", "portrait"],
+      "date": "2023-07"
+    }
+  ],
+  "film": [
+    {
+      "id": "digital-explorations",
+      "title": "Digital Explorations",
+      "description": "Exploring storytelling in the digital age.",
+      "duration": "12:34",
+      "thumbnail": "images/art2.webp",
+      "tags": ["digital", "narrative"],
+      "date": "2023-06"
+    },
+    {
+      "id": "tutorials",
+      "title": "Tutorials",
+      "description": "Sharing knowledge and tools for creation and self-expression",
+      "duration": "8:45", 
+      "thumbnail": "images/art3.webp",
+      "tags": ["education", "tutorial"],
+      "date": "2023-05"
+    }
+  ],
+  "vfx": [
+    {
+      "id": "particle-dynamics",
+      "title": "Particle Dynamics",
+      "description": "Advanced particle systems for realistic environmental effects.",
+      "tags": ["particles", "simulation"]
+    },
+    {
+      "id": "character-animation", 
+      "title": "Character Animation",
+      "description": "Bringing digital characters to life with motion capture integration.",
+      "tags": ["animation", "mocap"]
+    },
+    {
+      "id": "environmental-vfx",
+      "title": "Environmental VFX", 
+      "description": "Creating immersive worlds with dynamic weather and lighting.",
+      "tags": ["environment", "lighting"]
+    },
+    {
+      "id": "procedural-modeling",
+      "title": "Procedural Modeling",
+      "description": "Using algorithms to generate complex 3D structures.",
+      "tags": ["procedural", "modeling"]
+    },
+    {
+      "id": "shader-development",
+      "title": "Shader Development",
+      "description": "Custom materials and rendering techniques for unique visual styles.",
+      "tags": ["shaders", "materials"]
+    },
+    {
+      "id": "motion-graphics",
+      "title": "Motion Graphics", 
+      "description": "Dynamic typography and graphic elements for film and digital media.",
+      "tags": ["motion", "graphics"]
+    }
+  ]
+}
