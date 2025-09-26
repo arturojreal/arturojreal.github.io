@@ -939,7 +939,7 @@ body {
     0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Enhanced Resizable Debug Panel */
+/* Enhanced Resizable Debug Panel - Desktop Only */
 .debug-panel {
   position: fixed;
   top: 20px;
@@ -961,6 +961,13 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   resize: both;
   font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+}
+
+/* Hide debug panel on mobile devices */
+@media (max-width: 768px) {
+  .debug-panel {
+    display: none !important;
+  }
 }
 .model-display {
     background: rgba(255, 255, 255, 0.1);
@@ -1691,8 +1698,8 @@ body {
     gap: 16px;
     padding: 20px;
     max-width: 100%;
-    margin: 0 auto;
-    max-height: 70vh;
+    margin: calc(50vh + 20px) auto 0 auto; /* Start below middle of page + 20px lower */
+    max-height: calc(45vh - 20px); /* Adjust height to compensate for lower position */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -2376,7 +2383,7 @@ html[data-color-scheme="light"] .item-duration {
   
   .name-section {
     padding: 20px;
-    bottom: 20%;
+    bottom: 10%; /* Move closer to bottom, below middle of page */
   }
   
   /* Navigation stays single-line on mobile with new liquid glass design */
@@ -2416,7 +2423,7 @@ html[data-color-scheme="light"] .item-duration {
   
   .name-section {
     padding: 15px;
-    bottom: 15%;
+    bottom: 5%; /* Move even closer to bottom on smaller screens */
   }
   
   .portfolio-grid {

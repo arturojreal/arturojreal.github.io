@@ -1699,12 +1699,20 @@ function updateToneMapping() {
 }
 
 function updateParticleColor() {
-    if (particleSystem && particleSystem.material) {
+    if (particleSystem && particleSystem.geometry) {
         const color = new THREE.Color(debugParams.particleColor);
-        // Apply color to particle material if not using custom color override
+        // Apply color to all particles if not using custom color override
         if (!debugParams.useCustomColor) {
-            particleSystem.material.color = color;
-            particleSystem.material.needsUpdate = true;
+            const colorAttribute = particleSystem.geometry.attributes.color;
+            if (colorAttribute) {
+                const colors = colorAttribute.array;
+                for (let i = 0; i < colors.length; i += 3) {
+                    colors[i] = color.r;
+                    colors[i + 1] = color.g;
+                    colors[i + 2] = color.b;
+                }
+                colorAttribute.needsUpdate = true;
+            }
         }
     }
 }
@@ -3333,10 +3341,40 @@ function initializeMobileConnect() {
                 icon: `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>X</title><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>`
             },
             {
+                name: 'Facebook',
+                handle: '@arturojreal',
+                url: 'https://facebook.com/arturojreal',
+                icon: `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Facebook</title><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg>`
+            },
+            {
+                name: 'Ko-fi',
+                handle: 'Support me',
+                url: 'https://ko-fi.com/arturojreal',
+                icon: `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Ko-fi</title><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.033 11.596c.049 4.271 3.759 4.825 3.759 4.825s8.665.456 13.888-.062c5.223-.519 6.807-3.505 6.807-3.505s.468-4.533-.584-9.059zM5.723 12.468c-.79.001-1.533.266-2.101.75-.568.484-.91 1.146-.967 1.875-.11 1.411.112 2.734.112 2.734.652-.648 1.49-1.018 2.378-1.05.888-.032 1.756.283 2.459.895.703.612 1.178 1.473 1.347 2.442.169.969-.044 1.979-.603 2.868.235.023.464.034.693.034.23 0 .459-.011.693-.034-.559-.889-.772-1.899-.603-2.868.169-.969.644-1.83 1.347-2.442.703-.612 1.571-.927 2.459-.895.888.032 1.726.402 2.378 1.05 0 0 .222-1.323.112-2.734-.057-.729-.399-1.391-.967-1.875a3.635 3.635 0 00-2.101-.75c-.846 0-1.664.311-2.31.878-.645.567-1.076 1.35-1.217 2.21-.141-.86-.572-1.643-1.217-2.21-.646-.567-1.464-.878-2.31-.878z"/></svg>`
+            },
+            {
+                name: 'LinkedIn',
+                handle: '@arturojreal',
+                url: 'https://linkedin.com/in/arturojreal',
+                icon: `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>`
+            },
+            {
+                name: 'Patreon',
+                handle: 'Support me',
+                url: 'https://patreon.com/arturojreal',
+                icon: `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Patreon</title><path d="M0 .48v23.04h4.22V.48zm15.385 0c-4.764 0-8.641 3.88-8.641 8.65 0 4.755 3.877 8.623 8.641 8.623 4.75 0 8.615-3.868 8.615-8.623C24 4.36 20.136.48 15.385.48z"/></svg>`
+            },
+            {
                 name: 'TikTok',
                 handle: '@arturojreal',
                 url: 'https://tiktok.com/@arturojreal',
                 icon: `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TikTok</title><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`
+            },
+            {
+                name: 'Twitch',
+                handle: '@arturojreal',
+                url: 'https://twitch.tv/arturojreal',
+                icon: `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>`
             }
         ];
         
