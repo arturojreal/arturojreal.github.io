@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -9,35 +11,71 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 // Three.js variables
 let scene, camera, renderer, particleSystem, particles;
-let mouse, raycaster;
-let originalPositions, targetPositions, velocities;
-let gltfModel = null;
-let solidModel = null;
+let originalPositions = [];
+let velocities = [];
+let targetPositions = [];
+let mouse = new THREE.Vector2();
+let raycaster = new THREE.Raycaster();
 let mixer = null;
+let solidModel = null; // Global solid model reference
 let isLoading = false; // Prevent infinite loading loops
 let composer, bloomPass;
 let isWebGLSupported = true;
 let reducedMotion = false;
 let highContrast = false;
 
+// Touch radius visualization
+let touchRadiusIndicator = null;
+let showTouchRadius = false; // Default to false (hidden)
+
+// Create touch radius indicator
+function createTouchRadiusIndicator() {
+    const geometry = new THREE.RingGeometry(0.8, 1, 32); // Inner radius 0.8, outer radius 1
+    const material = new THREE.MeshBasicMaterial({
+        color: 0x00ff00, // Bright green for visibility
+        transparent: true,
+        opacity: 0.6,
+        side: THREE.DoubleSide
+    });
+    touchRadiusIndicator = new THREE.Mesh(geometry, material);
+    touchRadiusIndicator.visible = false;
+    scene.add(touchRadiusIndicator);
+    console.log('Touch radius indicator created');
+}
+
+// Update touch radius indicator
+function updateTouchRadiusIndicator(mousePos, radius) {
+    if (!touchRadiusIndicator) return;
+    
+    // Convert screen coordinates to world coordinates
+    const vector = new THREE.Vector3(mousePos.x, mousePos.y, 0.5);
+    vector.unproject(camera);
+    const dir = vector.sub(camera.position).normalize();
+    const distance = -camera.position.z / dir.z;
+    const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+    
+    touchRadiusIndicator.position.copy(pos);
+    touchRadiusIndicator.scale.setScalar(radius);
+    touchRadiusIndicator.lookAt(camera.position);
+}
+
 // Rotation control variables
 let currentRotationY = 0;
 let rotationDirection = 1;
-const maxRotationY = Math.PI * 0.44; // ~160 degrees (80 degrees each direction)
 const minRotationY = -Math.PI * 0.44;
 let baseRotationSpeed = 0.005;
 let easingZone = 0.15; // How close to limits before easing starts (0.0 to 1.0)
 
 // Model-specific default parameters
 const glbDefaults = {
-    particleSize: 1,
+    particleSize: 0.4,
     particleOpacity: 0.9,
     particleDensity: 42000,
     scaleFactor: 12,
-    interactionRadius: 6.6,
-    disperseForce: 1.84,
+    interactionRadius: 2.8,
+    disperseForce: 0.15,
     rotationSpeed: 0.003,
-    easingZone: 0.2,
+    easingZone: 0.3,
     rotationMinDegrees: -10,
     rotationMaxDegrees: 30,
     bloomThreshold: 0.2,
@@ -48,9 +86,9 @@ const glbDefaults = {
     modelRotationX: 0,
     modelRotationY: 0,
     modelRotationZ: 0,
-    modelPositionX: 0,
-    modelPositionY: 2.5,
-    modelPositionZ: 3.9,
+    modelPositionX: 0.1,
+    modelPositionY: 1.6,
+    modelPositionZ: -10,
     // Separate 3D model controls
     solidModelScale: 1,
     solidModelPositionX: 0,
@@ -58,15 +96,15 @@ const glbDefaults = {
     solidModelPositionZ: 0,
     solidModelRotationX: 0,
     solidModelRotationY: 0,
-    solidModelRotationZ: 0,    customColor: '#ffffff',
+    solidModelRotationZ: 0,
+    customColor: '#ffffff',
     useCustomColor: false,
     particleEffectsEnabled: true,
     showAsParticles: true,
     showAs3DModel: false,
     // Tone mapping
     toneMappingExposure: 0.74,
-    // Dreamy particles system
-    enableDreamyParticles: true,
+    // Particle system (always enabled)
     // Particle controls
     particleColor: '#791630',
     particleForce: 0.58,
@@ -78,27 +116,27 @@ const glbDefaults = {
 };
 
 const plyDefaults = {
-    particleSize: 1,
-    particleOpacity: 0.9,
-    particleDensity: 40500,
-    scaleFactor: 24.9,
-    interactionRadius: 2.6,
-    disperseForce: 1.84,
-    rotationSpeed: 0.019,
-    easingZone: 0.5,
+    particleSize: 1.201,
+    particleOpacity: 0.96,
+    particleDensity: 85000,
+    scaleFactor: 16.7,
+    interactionRadius: 13.5,
+    disperseForce: 1.38,
+    rotationSpeed: 0.002,
+    easingZone: 0.45,
     rotationMinDegrees: -10,
-    rotationMaxDegrees: 70,
+    rotationMaxDegrees: 30,
     bloomThreshold: 0.2,
-    bloomStrength: 0.8,
-    bloomRadius: 0.4,
+    bloomStrength: 0.3,
+    bloomRadius: 0.15,
     bloomEnabled: true,
     modelType: 'ply',
-    modelRotationX: 15,
+    modelRotationX: -65,
     modelRotationY: 0,
     modelRotationZ: 0,
-    modelPositionX: 0,
-    modelPositionY: 5.4,
-    modelPositionZ: -10,
+    modelPositionX: 0.1,
+    modelPositionY: 6.2,
+    modelPositionZ: -3.2,
     // Separate 3D model controls
     solidModelScale: 1,
     solidModelPositionX: 0,
@@ -106,15 +144,16 @@ const plyDefaults = {
     solidModelPositionZ: 0,
     solidModelRotationX: 0,
     solidModelRotationY: 0,
-    solidModelRotationZ: 0,    customColor: '#ffffff',
-    useCustomColor: false,
+    solidModelRotationZ: 0,
+    customColor: '#d8aa5a',
+    useCustomColor: true,
     particleEffectsEnabled: true,
     showAsParticles: true,
     showAs3DModel: false,
     // Tone mapping
     toneMappingExposure: 0.74,
     // Particle controls
-    particleColor: '#791630',
+    particleColor: '#d8aa5a',
     particleForce: 0.58,
     particleMinAlpha: 0.04,
     particleMaxAlpha: 0.25,
@@ -123,8 +162,8 @@ const plyDefaults = {
     bloomDirectionY: 0.18
 };
 
-// Debug control variables - start with GLB defaults
-let debugParams = { ...glbDefaults };
+// Debug control variables - start with PLY defaults for ARTURO.ply as default
+let debugParams = { ...plyDefaults };
 
 // Model management system
 let loadedModels = {
@@ -132,7 +171,7 @@ let loadedModels = {
         { name: 'Default GLB (arturo_site.glb)', path: './models/arturo_site.glb', isDefault: true }
     ],
     ply: [
-        { name: 'Default PLY (arturo_site.ply)', path: './source/arturo_site.ply', isDefault: true }
+        { name: 'Default PLY (ARTURO.ply)', path: './ARTURO.ply', isDefault: true }
     ]
 };
 let currentModelIndex = { glb: 0, ply: 0 };
@@ -621,6 +660,9 @@ function initializeThreeJS() {
         // Setup post-processing
         setupPostProcessing();
         
+        // Create touch radius indicator
+        createTouchRadiusIndicator();
+        
         // Mouse and raycaster for interaction
         mouse = new THREE.Vector2();
         raycaster = new THREE.Raycaster();
@@ -636,6 +678,15 @@ function initializeThreeJS() {
         window.addEventListener('resize', onWindowResize);
         container.addEventListener('mousemove', onMouseMove);
         container.addEventListener('touchmove', onTouchMove);
+        container.addEventListener('mouseenter', () => {
+            if (touchRadiusIndicator && showTouchRadius) touchRadiusIndicator.visible = true;
+        });
+        container.addEventListener('mouseleave', () => {
+            if (touchRadiusIndicator) touchRadiusIndicator.visible = false;
+        });
+        container.addEventListener('touchend', () => {
+            if (touchRadiusIndicator) touchRadiusIndicator.visible = false;
+        });
         
         // Start render loop
         animate();
@@ -812,10 +863,8 @@ function createParticleSystem(positions, colors) {
     
     particleGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
     
-    // Create material with conditional opacity handling
-    const opacity = debugParams.enableDreamyParticles ? 
-        debugParams.particleMaxAlpha : 
-        debugParams.particleOpacity;
+    // Create material with dreamy particle settings
+    const opacity = debugParams.particleMaxAlpha;
         
     const particleMaterial = new THREE.PointsMaterial({
         size: debugParams.particleSize,
@@ -828,10 +877,8 @@ function createParticleSystem(positions, colors) {
         depthTest: false
     });
     
-    // Enhanced material properties for dreamy particles
-    if (debugParams.enableDreamyParticles) {
-        particleMaterial.alphaTest = debugParams.particleMinAlpha;
-    }
+    // Enhanced material properties (always enabled)
+    particleMaterial.alphaTest = debugParams.particleMinAlpha;
     
     // Clean up existing particle system
     if (particleSystem) {
@@ -1084,6 +1131,47 @@ function initializeDebugPanel() {
         }
     });
     
+    // Triple tap support for mobile debug panel access
+    let tapCount = 0;
+    let tapTimer = null;
+    
+    document.addEventListener('touchend', function(event) {
+        tapCount++;
+        
+        if (tapCount === 1) {
+            tapTimer = setTimeout(() => {
+                tapCount = 0;
+            }, 500); // Reset after 500ms
+        } else if (tapCount === 3) {
+            clearTimeout(tapTimer);
+            tapCount = 0;
+            
+            // On mobile, replace social links with debug panel
+            const mobileNav = document.querySelector('.mobile-nav');
+            const mobileSocialGrid = document.querySelector('.mobile-social-grid');
+            const isDebugVisible = !debugPanel.classList.contains('hidden');
+            
+            if (isDebugVisible) {
+                // Hide debug panel, show social links
+                debugPanel.classList.add('hidden');
+                if (mobileNav) mobileNav.style.display = 'flex';
+                if (mobileSocialGrid) mobileSocialGrid.style.display = 'flex';
+                console.log('Debug panel hidden, social links restored');
+            } else {
+                // Show debug panel, hide social links
+                debugPanel.classList.remove('hidden');
+                debugPanel.style.display = 'block'; // Force display on mobile
+                if (mobileNav) mobileNav.style.display = 'none';
+                if (mobileSocialGrid) mobileSocialGrid.style.display = 'none';
+                console.log('Debug panel shown, social links hidden', {
+                    panelClasses: debugPanel.className,
+                    panelDisplay: debugPanel.style.display,
+                    panelVisible: !debugPanel.classList.contains('hidden')
+                });
+            }
+        }
+    });
+    
     if (debugClose) {
         debugClose.addEventListener('click', function() {
             debugPanel.classList.add('hidden');
@@ -1210,6 +1298,40 @@ function initializeDebugPanel() {
         }
     });
     
+    // Bloom effect controls
+    initializeSliderWithNumber('bloom-threshold', 'bloomThreshold', function() {
+        if (activeModelInstance) activeModelInstance.updateParam('bloomThreshold', debugParams.bloomThreshold);
+        updateBloomSettings();
+    });
+    initializeSliderWithNumber('bloom-strength', 'bloomStrength', function() {
+        if (activeModelInstance) activeModelInstance.updateParam('bloomStrength', debugParams.bloomStrength);
+        updateBloomSettings();
+    });
+    initializeSliderWithNumber('bloom-radius', 'bloomRadius', function() {
+        if (activeModelInstance) activeModelInstance.updateParam('bloomRadius', debugParams.bloomRadius);
+        updateBloomSettings();
+    });
+    
+    // Bloom enable/disable toggle
+    const bloomToggle = document.getElementById('bloom-enabled');
+    if (bloomToggle) {
+        bloomToggle.addEventListener('change', function(e) {
+            debugParams.bloomEnabled = e.target.checked;
+            if (activeModelInstance) activeModelInstance.updateParam('bloomEnabled', debugParams.bloomEnabled);
+            updateBloomSettings();
+        });
+    }
+    
+    // Bloom direction controls
+    initializeSliderWithNumber('bloom-direction-x', 'bloomDirectionX', function() {
+        if (activeModelInstance) activeModelInstance.updateParam('bloomDirectionX', debugParams.bloomDirectionX);
+        updateBloomSettings();
+    });
+    initializeSliderWithNumber('bloom-direction-y', 'bloomDirectionY', function() {
+        if (activeModelInstance) activeModelInstance.updateParam('bloomDirectionY', debugParams.bloomDirectionY);
+        updateBloomSettings();
+    });
+    
     // Enhanced file input handler (replaces old system)
     const modelFileInput = document.getElementById('load-model');
     if (modelFileInput) {
@@ -1225,8 +1347,12 @@ function initializeDebugPanel() {
                     modelType = 'glb';
                 } else if (fileName.endsWith('.ply')) {
                     modelType = 'ply';
+                } else if (fileName.endsWith('.obj')) {
+                    modelType = 'obj';
+                } else if (fileName.endsWith('.stl')) {
+                    modelType = 'stl';
                 } else {
-                    alert('Unsupported file type. Please use .glb, .gltf, or .ply files.');
+                    alert('Unsupported file type. Please use .glb, .gltf, .ply, .obj, or .stl files.');
                     return;
                 }
                 
@@ -1308,20 +1434,17 @@ function initializeDebugPanel() {
         });
     }
     
-    // Dreamy particles toggle
-    const dreamyParticlesToggle = document.getElementById('enable-dreamy-particles');
-    if (dreamyParticlesToggle) {
-        dreamyParticlesToggle.addEventListener('change', function(e) {
-            if (isLoading) return; // Skip during loading/UI updates
-            
-            debugParams.enableDreamyParticles = e.target.checked;
-            updateParticleAlpha();
-            reloadParticles();
+    
+    // Touch radius visibility toggle
+    const showTouchRadiusToggle = document.getElementById('show-touch-radius');
+    if (showTouchRadiusToggle) {
+        showTouchRadiusToggle.addEventListener('change', function(e) {
+            showTouchRadius = e.target.checked;
+            if (touchRadiusIndicator) {
+                touchRadiusIndicator.visible = showTouchRadius;
+            }
         });
     }
-    
-    // Old display mode checkboxes removed - using enhanced card system now
-    
     // Particle effects toggle
     const particleEffectsCheckbox = document.getElementById('particle-effects-enabled');
     if (particleEffectsCheckbox) {
@@ -1745,8 +1868,21 @@ function updateParticleAlpha() {
 // Prevent infinite reload loops with debouncing
 let isReloading = false;
 let reloadTimeout = null;
+let reloadDebounceTimeout = null;
 
 function reloadParticles() {
+    // Clear any pending debounced reload
+    if (reloadDebounceTimeout) {
+        clearTimeout(reloadDebounceTimeout);
+    }
+    
+    // Debounce rapid successive calls
+    reloadDebounceTimeout = setTimeout(() => {
+        performReload();
+    }, 150); // 150ms debounce
+}
+
+function performReload() {
     // Clear any pending reload
     if (reloadTimeout) {
         clearTimeout(reloadTimeout);
@@ -1754,8 +1890,7 @@ function reloadParticles() {
     
     // Prevent multiple simultaneous reloads
     if (isReloading) {
-        console.log('Reload already in progress, queuing...');
-        reloadTimeout = setTimeout(reloadParticles, 100);
+        console.log('Reload already in progress, skipping...');
         return;
     }
     
@@ -1812,6 +1947,8 @@ function exportParameters() {
         bloomStrength: debugParams.bloomStrength,
         bloomRadius: debugParams.bloomRadius,
         bloomEnabled: debugParams.bloomEnabled,
+        bloomDirectionX: debugParams.bloomDirectionX,
+        bloomDirectionY: debugParams.bloomDirectionY,
         
         // Model parameters
         modelType: debugParams.modelType,
@@ -1821,6 +1958,34 @@ function exportParameters() {
         modelPositionX: debugParams.modelPositionX,
         modelPositionY: debugParams.modelPositionY,
         modelPositionZ: debugParams.modelPositionZ,
+        
+        // 3D Model controls
+        solidModelScale: debugParams.solidModelScale,
+        solidModelPositionX: debugParams.solidModelPositionX,
+        solidModelPositionY: debugParams.solidModelPositionY,
+        solidModelPositionZ: debugParams.solidModelPositionZ,
+        solidModelRotationX: debugParams.solidModelRotationX,
+        solidModelRotationY: debugParams.solidModelRotationY,
+        solidModelRotationZ: debugParams.solidModelRotationZ,
+        
+        // Color parameters
+        customColor: debugParams.customColor,
+        useCustomColor: debugParams.useCustomColor,
+        particleColor: debugParams.particleColor,
+        
+        // Effects and display
+        particleEffectsEnabled: debugParams.particleEffectsEnabled,
+        showAsParticles: debugParams.showAsParticles,
+        showAs3DModel: debugParams.showAs3DModel,
+        enableDreamyParticles: debugParams.enableDreamyParticles,
+        
+        // Tone mapping
+        toneMappingExposure: debugParams.toneMappingExposure,
+        
+        // Dreamy particle controls
+        particleForce: debugParams.particleForce,
+        particleMinAlpha: debugParams.particleMinAlpha,
+        particleMaxAlpha: debugParams.particleMaxAlpha,
         
         // Model info
         currentModelName: currentModel.name,
@@ -1941,10 +2106,19 @@ function updateBloomSettings() {
 
 function onMouseMove(event) {
     if (reducedMotion) return;
-    
+  
     const rect = event.currentTarget.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    // Show and update touch radius indicator
+    if (touchRadiusIndicator && showTouchRadius) {
+        touchRadiusIndicator.visible = true;
+        const modelScale = activeModelInstance ? activeModelInstance.particleParams.scaleFactor : debugParams.scaleFactor;
+        const baseRadius = debugParams.interactionRadius || 2.8;
+        const interactionRadius = baseRadius * (modelScale / 12);
+        updateTouchRadiusIndicator(mouse, interactionRadius);
+    }
     
     // Always interact with particles (whether from model or fallback)
     if (particleSystem) {
@@ -1960,6 +2134,15 @@ function onTouchMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
     mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    // Show and update touch radius indicator
+    if (touchRadiusIndicator && showTouchRadius) {
+        touchRadiusIndicator.visible = true;
+        const modelScale = activeModelInstance ? activeModelInstance.particleParams.scaleFactor : debugParams.scaleFactor;
+        const baseRadius = debugParams.interactionRadius || 2.8;
+        const interactionRadius = baseRadius * (modelScale / 12);
+        updateTouchRadiusIndicator(mouse, interactionRadius);
+    }
     
     // Always interact with particles (whether from model or fallback)
     if (particleSystem) {
@@ -2038,8 +2221,8 @@ function animate() {
             }
         }
         
-        // Apply dreamy particle force effects
-        applyDreamyParticleEffects();
+        // Apply particle force effects (always enabled)
+        applyParticleForceEffects();
         
         // Calculate eased rotation with smooth endpoints using debug parameters
         const maxRotationYDynamic = (debugParams.rotationMaxDegrees * Math.PI) / 180;
@@ -2140,8 +2323,8 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-function applyDreamyParticleEffects() {
-    if (!particleSystem || !particles || !debugParams.enableDreamyParticles) return;
+function applyParticleForceEffects() {
+    if (!particleSystem || !particles) return;
     
     const positions = particles.array;
     const particleForce = debugParams.particleForce || 0.58;
@@ -2623,7 +2806,26 @@ class ModelInstance {
                     loader.load(this.path, resolve, undefined, reject);
                 });
                 model = gltf.scene.clone();
+            } else if (this.type === 'obj') {
+                const loader = new OBJLoader();
+                model = await new Promise((resolve, reject) => {
+                    loader.load(this.path, resolve, undefined, reject);
+                });
+            } else if (this.type === 'stl') {
+                const loader = new STLLoader();
+                const geometry = await new Promise((resolve, reject) => {
+                    loader.load(this.path, resolve, undefined, reject);
+                });
+                
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0x888888,
+                    metalness: this.modelParams.metalness || 0.1,
+                    roughness: this.modelParams.roughness || 0.8
+                });
+                
+                model = new THREE.Mesh(geometry, material);
             } else {
+                // PLY and other geometry-based formats
                 const loader = new PLYLoader();
                 const geometry = await new Promise((resolve, reject) => {
                     loader.load(this.path, resolve, undefined, reject);
@@ -2632,8 +2834,8 @@ class ModelInstance {
                 const material = new THREE.MeshStandardMaterial({
                     vertexColors: geometry.attributes.color ? true : false,
                     color: geometry.attributes.color ? 0xffffff : 0x888888,
-                    metalness: this.modelParams.metalness,
-                    roughness: this.modelParams.roughness
+                    metalness: this.modelParams.metalness || 0.1,
+                    roughness: this.modelParams.roughness || 0.8
                 });
                 
                 model = new THREE.Mesh(geometry, material);
@@ -2680,11 +2882,34 @@ class ModelInstance {
         const particleGeometry = new THREE.BufferGeometry();
         particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(scaledPositions, 3));
         
-        if (colors) {
+        // Handle colors - use custom color if enabled, otherwise use existing colors or gradient
+        let colorArray;
+        console.log('Enhanced model color check:', {
+            useCustomColor: debugParams.useCustomColor,
+            customColor: debugParams.customColor,
+            particleParamsUseCustomColor: this.particleParams?.useCustomColor,
+            particleParamsCustomColor: this.particleParams?.customColor
+        });
+        
+        const useCustomColor = debugParams.useCustomColor || this.particleParams?.useCustomColor;
+        const customColor = debugParams.customColor || this.particleParams?.customColor;
+        
+        if (useCustomColor && customColor) {
+            // Use custom color for all particles
+            console.log('Applying custom color:', customColor);
+            const colorObj = new THREE.Color(customColor);
+            colorArray = new Float32Array(scaledPositions.length);
+            for (let i = 0; i < scaledPositions.length; i += 3) {
+                colorArray[i] = colorObj.r;
+                colorArray[i + 1] = colorObj.g;
+                colorArray[i + 2] = colorObj.b;
+            }
+            particleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colorArray, 3));
+        } else if (colors) {
             particleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
         } else {
             // Use a more natural color scheme - white/blue gradient based on height
-            const colorArray = new Float32Array(scaledPositions.length);
+            colorArray = new Float32Array(scaledPositions.length);
             for (let i = 0; i < scaledPositions.length; i += 3) {
                 const y = scaledPositions[i + 1];
                 const normalizedHeight = Math.max(0, Math.min(1, (y + 1) / 2)); // Normalize to 0-1
@@ -2950,10 +3175,10 @@ window.exportInstanceParams = function(id) {
 
 // Initialize default model instance
 function initializeDefaultModelInstances() {
-    // Create single default GLB instance - this is the main model for the site
-    const defaultGLB = createEnhancedModelInstance('arturo_site.glb', 'glb', './models/arturo_site.glb', true);
+    // Create single default PLY instance - ARTURO.ply is the main model for the site
+    const defaultPLY = createEnhancedModelInstance('ARTURO.ply', 'ply', './ARTURO.ply', true);
     
-    console.log('Default model instance initialized:', defaultGLB.name);
+    console.log('Default model instance initialized:', defaultPLY.name);
 }
 
 // Parameter change tracking
@@ -3159,8 +3384,12 @@ function initializeEnhancedModelSystem() {
                     modelType = 'glb';
                 } else if (fileName.endsWith('.ply')) {
                     modelType = 'ply';
+                } else if (fileName.endsWith('.obj')) {
+                    modelType = 'obj';
+                } else if (fileName.endsWith('.stl')) {
+                    modelType = 'stl';
                 } else {
-                    alert('Unsupported file type. Please use .glb, .gltf, or .ply files.');
+                    alert('Unsupported file type. Please use .glb, .gltf, .ply, .obj, or .stl files.');
                     return;
                 }
                 

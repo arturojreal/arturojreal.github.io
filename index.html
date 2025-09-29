@@ -55,9 +55,9 @@
                 </div>
             </div>
             <div class="control-group">
-                <label for="load-model">Load New Model:</label> <!-- Upload GLB/GLTF or PLY files -->
+                <label for="load-model">Load New Model:</label>
                 <div class="control-input-group">
-                    <input type="file" id="load-model" accept=".glb,.gltf,.ply" />
+                    <input type="file" id="load-model" accept=".glb,.gltf,.ply,.obj,.stl" />
                     <button id="apply-model" class="apply-btn" disabled>Apply Model</button>
                 </div>
             </div>
@@ -69,34 +69,71 @@
             </div>
 
 
-            <!-- BASIC PARTICLE SETTINGS -->
-            <h3>⚙️ Basic Particle Settings</h3>
+            <!-- UNIFIED PARTICLE SYSTEM -->
+            <h3>⚙️ Particle System</h3>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="particle-effects-enabled" checked> Enable Particle Effects
+                </label>
+            </div>
+            
+            <!-- Visual Properties -->
+            <h4>🎨 Visual Properties</h4>
             <div class="control-group">
                 <label for="particle-size">Size:</label>
                 <div class="control-input-group">
-                    <input type="range" id="particle-size" min="0.001" max="5.0" step="0.001" value="0.4">
-                    <input type="number" id="particle-size-num" min="0.001" max="5.0" step="0.001" value="0.4">
-                </div>
-            </div>
-            <div class="control-group">
-                <label for="particle-opacity">Opacity:</label>
-                <div class="control-input-group">
-                    <input type="range" id="particle-opacity" min="0.01" max="1.0" step="0.01" value="0.9">
-                    <input type="number" id="particle-opacity-num" min="0.01" max="1.0" step="0.01" value="0.9">
+                    <input type="range" id="particle-size" min="0.001" max="5.0" step="0.001" value="1.201">
+                    <input type="number" id="particle-size-num" min="0.001" max="5.0" step="0.001" value="1.201">
                 </div>
             </div>
             <div class="control-group">
                 <label for="particle-density">Density:</label>
                 <div class="control-input-group">
-                    <input type="range" id="particle-density" min="500" max="100000" step="500" value="42000">
-                    <input type="number" id="particle-density-num" min="500" max="100000" step="500" value="42000">
+                    <input type="range" id="particle-density" min="500" max="100000" step="500" value="85000">
+                    <input type="number" id="particle-density-num" min="500" max="100000" step="500" value="85000">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="particle-color">Color:</label>
+                <div class="control-input-group">
+                    <input type="color" id="particle-color" value="#d8aa5a">
+                    <input type="text" id="particle-color-hex" placeholder="#d8aa5a" maxlength="7">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="particle-opacity">Opacity:</label>
+                <div class="control-input-group">
+                    <input type="range" id="particle-opacity" min="0.01" max="1.0" step="0.01" value="0.25">
+                    <input type="number" id="particle-opacity-num" min="0.01" max="1.0" step="0.01" value="0.25">
+                </div>
+            </div>
+            
+            <!-- Interaction Properties -->
+            <h4>🎯 Touch & Interaction</h4>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="show-touch-radius"> Show Touch Radius
+                </label>
+            </div>
+            <div class="control-group">
+                <label for="interaction-radius">Touch Radius:</label>
+                <div class="control-input-group">
+                    <input type="range" id="interaction-radius" min="0.1" max="20.0" step="0.1" value="13.5">
+                    <input type="number" id="interaction-radius-num" min="0.1" max="20.0" step="0.1" value="13.5">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="disperse-force">Disperse Force:</label>
+                <div class="control-input-group">
+                    <input type="range" id="disperse-force" min="0.01" max="5.0" step="0.01" value="1.38">
+                    <input type="number" id="disperse-force-num" min="0.01" max="5.0" step="0.01" value="1.38">
                 </div>
             </div>
             <div class="control-group">
                 <label for="scale-factor">Scale:</label>
                 <div class="control-input-group">
-                    <input type="range" id="scale-factor" min="0.1" max="50" step="0.1" value="12">
-                    <input type="number" id="scale-factor-num" min="0.1" max="50" step="0.1" value="12">
+                    <input type="range" id="scale-factor" min="0.1" max="50" step="0.1" value="16.7">
+                    <input type="number" id="scale-factor-num" min="0.1" max="50" step="0.1" value="16.7">
                 </div>
             </div>
             <div class="control-group">
@@ -120,13 +157,8 @@
                     <input type="number" id="model-position-z-num" min="-10" max="10" step="0.1" value="0">
                 </div>
             </div>
-            <div class="control-group">
-                <label>
-                    <input type="checkbox" id="particle-effects-enabled" checked> Enable Particle Effects
-                </label>
-            </div>
             
-            <!-- PARTICLE ROTATION CONTROLS -->
+            <!-- MODEL ROTATION CONTROLS -->
             <div class="control-group">
                 <label for="model-rotation-x">Particle Rotation X:</label>
                 <div class="control-input-group">
@@ -206,67 +238,50 @@
             <div class="control-group">
                 <label for="custom-color">Model Color Override:</label>
                 <div class="control-input-group">
-                    <input type="color" id="custom-color" value="#ffffff">
-                    <input type="text" id="custom-color-hex" placeholder="#ffffff" maxlength="7">
+                    <input type="color" id="custom-color" value="#d8aa5a">
+                    <input type="text" id="custom-color-hex" placeholder="#d8aa5a" maxlength="7">
                 </div>
             </div>
             <div class="control-group">
                 <label>
-                    <input type="checkbox" id="use-custom-color"> Use Custom Color
+                    <input type="checkbox" id="use-custom-color" checked> Use Custom Color
                 </label>
             </div>
             
             <div class="control-group">
                 <label for="particle-color">Particle Color:</label>
                 <div class="control-input-group">
-                    <input type="color" id="particle-color" value="#791630">
-                    <input type="text" id="particle-color-hex" placeholder="#791630" maxlength="7">
+                    <input type="color" id="particle-color" value="#d8aa5a">
+                    <input type="text" id="particle-color-hex" placeholder="#d8aa5a" maxlength="7">
                 </div>
             </div>
 
-            <!-- CLASSIC PARTICLE INTERACTION -->
-            <h3>🎯 Classic Interaction System</h3>
-            <p class="control-note">💡 Traditional mouse/touch particle dispersion</p>
-            <div class="control-group">
-                <label for="interaction-radius">Touch Radius:</label>
-                <div class="control-input-group">
-                    <input type="range" id="interaction-radius" min="0.1" max="20.0" step="0.1" value="2.8">
-                    <input type="number" id="interaction-radius-num" min="0.1" max="20.0" step="0.1" value="2.8">
-                </div>
-            </div>
-            <div class="control-group">
-                <label for="disperse-force">Disperse Force:</label>
-                <div class="control-input-group">
-                    <input type="range" id="disperse-force" min="0.01" max="5.0" step="0.01" value="0.15">
-                    <input type="number" id="disperse-force-num" min="0.01" max="5.0" step="0.01" value="0.15">
-                </div>
-            </div>
             
             <!-- ANIMATION CONTROLS -->
             <h3>🔄 Animation</h3>
             <div class="control-group">
-                <label for="rotation-speed">Rotation Speed:</label> <!-- Auto-rotation speed of entire model -->
+                <label for="rotation-speed">Rotation Speed:</label>
                 <div class="control-input-group">
-                    <input type="range" id="rotation-speed" min="0.001" max="0.02" step="0.001" value="0.003">
-                    <input type="number" id="rotation-speed-num" min="0.001" max="0.02" step="0.001" value="0.003">
+                    <input type="range" id="rotation-speed" min="0.001" max="0.02" step="0.001" value="0.002">
+                    <input type="number" id="rotation-speed-num" min="0.001" max="0.02" step="0.001" value="0.002">
                 </div>
             </div>
             <div class="control-group">
-                <label for="easing-zone">Easing Zone:</label> <!-- Smoothness of particle return animation -->
+                <label for="easing-zone">Easing Zone:</label>
                 <div class="control-input-group">
-                    <input type="range" id="easing-zone" min="0.05" max="0.5" step="0.05" value="0.3">
-                    <input type="number" id="easing-zone-num" min="0.05" max="0.5" step="0.05" value="0.3">
+                    <input type="range" id="easing-zone" min="0.05" max="0.5" step="0.05" value="0.45">
+                    <input type="number" id="easing-zone-num" min="0.05" max="0.5" step="0.05" value="0.45">
                 </div>
             </div>
             <div class="control-group">
-                <label for="rotation-min">Rotation Min (degrees):</label> <!-- Minimum rotation angle -->
+                <label for="rotation-min">Rotation Min (degrees):</label>
                 <div class="control-input-group">
                     <input type="range" id="rotation-min" min="-180" max="0" step="5" value="-10">
                     <input type="number" id="rotation-min-num" min="-180" max="0" step="5" value="-10">
                 </div>
             </div>
             <div class="control-group">
-                <label for="rotation-max">Rotation Max (degrees):</label> <!-- Maximum rotation angle -->
+                <label for="rotation-max">Rotation Max (degrees):</label>
                 <div class="control-input-group">
                     <input type="range" id="rotation-max" min="0" max="180" step="5" value="70">
                     <input type="number" id="rotation-max-num" min="0" max="180" step="5" value="70">
@@ -274,7 +289,7 @@
             </div>
 
             <div class="control-group">
-                <label for="tone-mapping-exposure">Tone Mapping Exposure:</label> <!-- HDR brightness/exposure control -->
+                <label for="tone-mapping-exposure">Tone Mapping Exposure:</label>
                 <div class="control-input-group">
                     <input type="range" id="tone-mapping-exposure" min="0.1" max="2.0" step="0.01" value="0.74">
                     <input type="number" id="tone-mapping-exposure-num" min="0.1" max="2.0" step="0.01" value="0.74">
@@ -285,39 +300,39 @@
             <h3>💫 Bloom Effects</h3>
             <div class="control-group">
                 <label>
-                    <input type="checkbox" id="bloom-enabled" checked> Enable Bloom <!-- Toggle bloom post-processing -->
+                    <input type="checkbox" id="bloom-enabled" checked> Enable Bloom
                 </label>
             </div>
             <div class="control-group">
-                <label for="bloom-threshold">Threshold:</label> <!-- Brightness level for bloom to activate -->
+                <label for="bloom-threshold">Threshold:</label>
                 <div class="control-input-group">
                     <input type="range" id="bloom-threshold" min="0" max="1" step="0.01" value="0.2">
                     <input type="number" id="bloom-threshold-num" min="0" max="1" step="0.01" value="0.2">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-strength">Strength:</label> <!-- Intensity of bloom effect -->
+                <label for="bloom-strength">Strength:</label>
                 <div class="control-input-group">
-                    <input type="range" id="bloom-strength" min="0" max="3" step="0.1" value="0.8">
-                    <input type="number" id="bloom-strength-num" min="0" max="3" step="0.1" value="0.8">
+                    <input type="range" id="bloom-strength" min="0" max="3" step="0.01" value="0.3">
+                    <input type="number" id="bloom-strength-num" min="0" max="3" step="0.01" value="0.3">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-radius">Radius:</label> <!-- Size/spread of bloom effect -->
+                <label for="bloom-radius">Radius:</label>
                 <div class="control-input-group">
-                    <input type="range" id="bloom-radius" min="0" max="1" step="0.01" value="0.4">
-                    <input type="number" id="bloom-radius-num" min="0" max="1" step="0.01" value="0.4">
+                    <input type="range" id="bloom-radius" min="0" max="1" step="0.01" value="0.15">
+                    <input type="number" id="bloom-radius-num" min="0" max="1" step="0.01" value="0.15">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-direction-x">Direction X:</label> <!-- Horizontal bloom direction bias -->
+                <label for="bloom-direction-x">Direction X:</label>
                 <div class="control-input-group">
                     <input type="range" id="bloom-direction-x" min="0.0" max="1.0" step="0.01" value="0.97">
                     <input type="number" id="bloom-direction-x-num" min="0.0" max="1.0" step="0.01" value="0.97">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-direction-y">Direction Y:</label> <!-- Vertical bloom direction bias -->
+                <label for="bloom-direction-y">Direction Y:</label>
                 <div class="control-input-group">
                     <input type="range" id="bloom-direction-y" min="0.0" max="1.0" step="0.01" value="0.18">
                     <input type="number" id="bloom-direction-y-num" min="0.0" max="1.0" step="0.01" value="0.18">
@@ -325,9 +340,9 @@
             </div>
             <!-- ACTION BUTTONS -->
             <h3>⚙️ Actions</h3>
-            <button id="export-params" class="export-btn">Export Parameters</button> <!-- Save current settings to clipboard -->
-            <button id="reset-params" class="reset-btn">Reset to Defaults</button> <!-- Restore default values -->
-            <button id="clear-models" class="clear-btn">Clear All Models</button> <!-- Remove all loaded models and reset scene -->
+            <button id="export-params" class="export-btn">Export Parameters</button>
+            <button id="reset-params" class="reset-btn">Reset to Defaults</button>
+            <button id="clear-models" class="clear-btn">Clear All Models</button>
         </div>
     </div>
 
