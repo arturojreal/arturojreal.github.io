@@ -104,6 +104,12 @@ const glbDefaults = {
     showAs3DModel: false,
     // Tone mapping
     toneMappingExposure: 0.74,
+    // Background color
+    backgroundColor: '#0a0a0a',
+    // Text colors
+    primaryTextColor: '#fffffc',
+    secondaryTextColor: '#cccccc',
+    accentTextColor: '#d8aa5a',
     // Particle system (always enabled)
     // Particle controls
     particleColor: '#791630',
@@ -152,6 +158,12 @@ const plyDefaults = {
     showAs3DModel: false,
     // Tone mapping
     toneMappingExposure: 0.74,
+    // Background color
+    backgroundColor: '#0a0a0a',
+    // Text colors
+    primaryTextColor: '#fffffc',
+    secondaryTextColor: '#cccccc',
+    accentTextColor: '#d8aa5a',
     // Particle controls
     particleColor: '#d8aa5a',
     particleForce: 0.58,
@@ -304,6 +316,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Initialize debug panel
     initializeDebugPanel();
+    
+    // Initialize text colors
+    updateTextColors();
     
     // Initialize page navigation
     initializeNavigation();
@@ -650,7 +665,9 @@ function initializeThreeJS() {
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0x000000, 1);
+        // Set initial background color from debug params
+        const initialColor = new THREE.Color(debugParams.backgroundColor);
+        renderer.setClearColor(initialColor, 1);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         
         // Set tone mapping
@@ -1148,21 +1165,21 @@ function initializeDebugPanel() {
             
             // On mobile, replace social links with debug panel
             const mobileNav = document.querySelector('.mobile-nav');
-            const mobileSocialGrid = document.querySelector('.mobile-social-grid');
+            const mobileSocialContainer = document.querySelector('.mobile-social-container');
             const isDebugVisible = !debugPanel.classList.contains('hidden');
             
             if (isDebugVisible) {
                 // Hide debug panel, show social links
                 debugPanel.classList.add('hidden');
                 if (mobileNav) mobileNav.style.display = 'flex';
-                if (mobileSocialGrid) mobileSocialGrid.style.display = 'flex';
+                if (mobileSocialContainer) mobileSocialContainer.style.display = 'flex';
                 console.log('Debug panel hidden, social links restored');
             } else {
                 // Show debug panel, hide social links
                 debugPanel.classList.remove('hidden');
                 debugPanel.style.display = 'block'; // Force display on mobile
                 if (mobileNav) mobileNav.style.display = 'none';
-                if (mobileSocialGrid) mobileSocialGrid.style.display = 'none';
+                if (mobileSocialContainer) mobileSocialContainer.style.display = 'none';
                 console.log('Debug panel shown, social links hidden', {
                     panelClasses: debugPanel.className,
                     panelDisplay: debugPanel.style.display,
@@ -1322,16 +1339,121 @@ function initializeDebugPanel() {
         });
     }
     
-    // Bloom direction controls
-    initializeSliderWithNumber('bloom-direction-x', 'bloomDirectionX', function() {
-        if (activeModelInstance) activeModelInstance.updateParam('bloomDirectionX', debugParams.bloomDirectionX);
-        updateBloomSettings();
+    // Tone mapping exposure control
+    initializeSliderWithNumber('tone-mapping-exposure', 'toneMappingExposure', function() {
+        if (activeModelInstance) activeModelInstance.updateParam('toneMappingExposure', debugParams.toneMappingExposure);
+        updateToneMappingExposure();
     });
+    
+    // Background color controls
+    const backgroundColorPicker = document.getElementById('background-color');
+    const backgroundColorHex = document.getElementById('background-color-hex');
+    
+    if (backgroundColorPicker) {
+        backgroundColorPicker.addEventListener('input', function(e) {
+            debugParams.backgroundColor = e.target.value;
+            if (backgroundColorHex) backgroundColorHex.value = e.target.value;
+            if (activeModelInstance) activeModelInstance.updateParam('backgroundColor', debugParams.backgroundColor);
+            updateBackgroundColor();
+        });
+    }
+    
+    if (backgroundColorHex) {
+        backgroundColorHex.addEventListener('input', function(e) {
+            let hex = e.target.value;
+            if (hex.startsWith('#') && (hex.length === 7 || hex.length === 4)) {
+                debugParams.backgroundColor = hex;
+                if (backgroundColorPicker) backgroundColorPicker.value = hex;
+                if (activeModelInstance) activeModelInstance.updateParam('backgroundColor', debugParams.backgroundColor);
+                updateBackgroundColor();
+            }
+        });
+    }
+    
+    // Text color controls
+    const primaryTextColorPicker = document.getElementById('primary-text-color');
+    const primaryTextColorHex = document.getElementById('primary-text-color-hex');
+    const secondaryTextColorPicker = document.getElementById('secondary-text-color');
+    const secondaryTextColorHex = document.getElementById('secondary-text-color-hex');
+    const accentTextColorPicker = document.getElementById('accent-text-color');
+    const accentTextColorHex = document.getElementById('accent-text-color-hex');
+    
+    // Primary text color
+    if (primaryTextColorPicker) {
+        primaryTextColorPicker.addEventListener('input', function(e) {
+            debugParams.primaryTextColor = e.target.value;
+            if (primaryTextColorHex) primaryTextColorHex.value = e.target.value;
+            if (activeModelInstance) activeModelInstance.updateParam('primaryTextColor', debugParams.primaryTextColor);
+            updateTextColors();
+        });
+    }
+    
+    if (primaryTextColorHex) {
+        primaryTextColorHex.addEventListener('input', function(e) {
+            let hex = e.target.value;
+            if (hex.startsWith('#') && (hex.length === 7 || hex.length === 4)) {
+                debugParams.primaryTextColor = hex;
+                if (primaryTextColorPicker) primaryTextColorPicker.value = hex;
+                if (activeModelInstance) activeModelInstance.updateParam('primaryTextColor', debugParams.primaryTextColor);
+                updateTextColors();
+            }
+        });
+    }
+    
+    // Secondary text color
+    if (secondaryTextColorPicker) {
+        secondaryTextColorPicker.addEventListener('input', function(e) {
+            debugParams.secondaryTextColor = e.target.value;
+            if (secondaryTextColorHex) secondaryTextColorHex.value = e.target.value;
+            if (activeModelInstance) activeModelInstance.updateParam('secondaryTextColor', debugParams.secondaryTextColor);
+            updateTextColors();
+        });
+    }
+    
+    if (secondaryTextColorHex) {
+        secondaryTextColorHex.addEventListener('input', function(e) {
+            let hex = e.target.value;
+            if (hex.startsWith('#') && (hex.length === 7 || hex.length === 4)) {
+                debugParams.secondaryTextColor = hex;
+                if (secondaryTextColorPicker) secondaryTextColorPicker.value = hex;
+                if (activeModelInstance) activeModelInstance.updateParam('secondaryTextColor', debugParams.secondaryTextColor);
+                updateTextColors();
+            }
+        });
+    }
+    
+    // Accent text color
+    if (accentTextColorPicker) {
+        accentTextColorPicker.addEventListener('input', function(e) {
+            debugParams.accentTextColor = e.target.value;
+            if (accentTextColorHex) accentTextColorHex.value = e.target.value;
+            if (activeModelInstance) activeModelInstance.updateParam('accentTextColor', debugParams.accentTextColor);
+            updateTextColors();
+        });
+    }
+    
+    if (accentTextColorHex) {
+        accentTextColorHex.addEventListener('input', function(e) {
+            let hex = e.target.value;
+            if (hex.startsWith('#') && (hex.length === 7 || hex.length === 4)) {
+                debugParams.accentTextColor = hex;
+                if (accentTextColorPicker) accentTextColorPicker.value = hex;
+                if (activeModelInstance) activeModelInstance.updateParam('accentTextColor', debugParams.accentTextColor);
+                updateTextColors();
+            }
+        });
+    }
+    
     initializeSliderWithNumber('bloom-direction-y', 'bloomDirectionY', function() {
         if (activeModelInstance) activeModelInstance.updateParam('bloomDirectionY', debugParams.bloomDirectionY);
         updateBloomSettings();
     });
     
+    // Bloom direction controls
+    initializeSliderWithNumber('bloom-direction-x', 'bloomDirectionX', function() {
+        if (activeModelInstance) activeModelInstance.updateParam('bloomDirectionX', debugParams.bloomDirectionX);
+        updateBloomSettings();
+    });
     // Enhanced file input handler (replaces old system)
     const modelFileInput = document.getElementById('load-model');
     if (modelFileInput) {
@@ -1538,11 +1660,10 @@ function deloadCurrentModel() {
 
 function updateCurrentModelDisplay() {
     const currentModelDisplay = document.getElementById('current-model-display');
-    if (currentModelDisplay) {
-        const currentType = debugParams.modelType;
-        const currentModel = loadedModels[currentType][currentModelIndex[currentType]];
-        const typeLabel = currentType.toUpperCase();
-        currentModelDisplay.textContent = `${typeLabel}: ${currentModel.name}`;
+    if (currentModelDisplay && activeModelInstance) {
+        const typeLabel = activeModelInstance.type.toUpperCase();
+        const viewMode = activeModelInstance.currentView === 'particles' ? 'Particles' : '3D Model';
+        currentModelDisplay.textContent = `${activeModelInstance.name} (${typeLabel} - ${viewMode})`;
     }
 }
 
@@ -1814,15 +1935,29 @@ function updateParticleOpacity() {
     }
 }
 
-function updateToneMapping() {
+function updateToneMappingExposure() {
     if (renderer) {
         renderer.toneMappingExposure = debugParams.toneMappingExposure;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
     }
 }
 
+function updateBackgroundColor() {
+    if (renderer) {
+        const color = new THREE.Color(debugParams.backgroundColor);
+        renderer.setClearColor(color, 1);
+    }
+}
+
+function updateTextColors() {
+    // Update CSS custom properties for dynamic text coloring
+    document.documentElement.style.setProperty('--primary-text-color', debugParams.primaryTextColor);
+    document.documentElement.style.setProperty('--secondary-text-color', debugParams.secondaryTextColor);
+    document.documentElement.style.setProperty('--accent-text-color', debugParams.accentTextColor);
+}
+
 function updateParticleColor() {
-    if (particleSystem && particleSystem.geometry) {
+    if (particleSystem) {
         const color = new THREE.Color(debugParams.particleColor);
         // Apply color to all particles if not using custom color override
         if (!debugParams.useCustomColor) {
@@ -2107,7 +2242,10 @@ function updateBloomSettings() {
 function onMouseMove(event) {
     if (reducedMotion) return;
   
-    const rect = event.currentTarget.getBoundingClientRect();
+    // Use renderer/canvas dimensions for accurate coordinate mapping
+    const canvas = renderer.domElement;
+    const rect = canvas.getBoundingClientRect();
+    
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     
@@ -2131,9 +2269,37 @@ function onTouchMove(event) {
 
     event.preventDefault();
     const touch = event.touches[0];
-    const rect = event.currentTarget.getBoundingClientRect();
-    mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    // Use renderer/canvas dimensions for accurate coordinate mapping
+    const canvas = renderer.domElement;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Calculate coordinates relative to the visible canvas area
+    let touchX = touch.clientX;
+    let touchY = touch.clientY;
+    
+    // On mobile, check if debug panel is visible and adjust coordinates
+    const debugPanel = document.getElementById('particle-debug');
+    const isMobile = window.innerWidth <= 767;
+    
+    if (isMobile && debugPanel && !debugPanel.classList.contains('hidden')) {
+        // Debug panel takes bottom 50% on mobile, so adjust touch coordinates
+        // to account for the reduced canvas area
+        const debugPanelHeight = window.innerHeight * 0.5;
+        const availableHeight = window.innerHeight - debugPanelHeight;
+        
+        // Remap Y coordinate to the available canvas area (top 50%)
+        if (touchY < availableHeight) {
+            // Touch is in the canvas area, remap to full coordinate space
+            touchY = (touchY / availableHeight) * window.innerHeight;
+        } else {
+            // Touch is in debug panel area, ignore
+            return;
+        }
+    }
+    
+    mouse.x = ((touchX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((touchY - rect.top) / rect.height) * 2 + 1;
     
     // Show and update touch radius indicator
     if (touchRadiusIndicator && showTouchRadius) {
@@ -2681,6 +2847,7 @@ class ModelInstance {
         
         updateEnhancedModelsList();
         updateContextSensitiveUI();
+        updateCurrentModelDisplay();
     }
     
     updateGlobalParams() {
@@ -2703,27 +2870,15 @@ class ModelInstance {
         }
     }
     
-    toggleDreamyParticles() {
-        this.dreamyParticlesEnabled = !this.dreamyParticlesEnabled;
-        this.particleParams.enableDreamyParticles = this.dreamyParticlesEnabled;
-        this.particleParamsTweaked = true;
-        
-        if (this.currentView === 'particles') {
-            this.updateGlobalParams();
-            updateEnhancedModelsList();
-            updateContextSensitiveUI();
-        }
-    }
-    
     exportParams() {
         const currentParams = this.currentView === 'particles' ? this.particleParams : this.modelParams;
+        
         const exportData = {
             modelName: this.name,
             modelType: this.type,
             viewMode: this.currentView,
             parameters: { ...currentParams },
-            tweaked: this.currentView === 'particles' ? this.particleParamsTweaked : this.modelParamsTweaked,
-            dreamyParticlesEnabled: this.dreamyParticlesEnabled
+            tweaked: this.currentView === 'particles' ? this.particleParamsTweaked : this.modelParamsTweaked
         };
         
         console.log(`${this.name} ${this.currentView} parameters:`, exportData);
@@ -3020,6 +3175,7 @@ function createEnhancedModelInstance(name, type, path, isDefault = false) {
     if (!activeModelInstance) {
         activeModelInstance = instance;
         console.log(`Setting ${instance.name} as active model instance`);
+        updateCurrentModelDisplay();
         // Switch to particles view for the first model to maintain compatibility
         setTimeout(() => {
             console.log(`Switching ${instance.name} to particles view`);
@@ -3137,12 +3293,6 @@ function updateEnhancedModelsList() {
                 </div>
                 
                 <div class="instance-controls">
-                    ${instance.currentView === 'particles' ? `
-                        <button class="dreamy-btn ${instance.dreamyParticlesEnabled ? 'active' : ''}" 
-                                onclick="toggleDreamyParticles('${id}')">
-                            ✨ Dreamy Particles
-                        </button>
-                    ` : ''}
                     <button class="export-btn" onclick="exportInstanceParams('${id}')">📤 Export</button>
                 </div>
                 
@@ -3160,12 +3310,6 @@ function updateEnhancedModelsList() {
 // Global functions for UI callbacks
 window.deleteModelInstance = deleteEnhancedModelInstance;
 window.switchToModelInstance = switchToModelInstance;
-window.toggleDreamyParticles = function(id) {
-    const instance = enhancedModelInstances.get(id);
-    if (instance) {
-        instance.toggleDreamyParticles();
-    }
-};
 window.exportInstanceParams = function(id) {
     const instance = enhancedModelInstances.get(id);
     if (instance) {
