@@ -1809,8 +1809,8 @@ body {
     display: flex !important;
     flex-direction: column;
     max-width: 100%;
-    margin: calc(50vh + 20px) auto 0 auto; /* Start below middle of page + 20px lower */
-    max-height: calc(45vh - 20px); /* Adjust height to compensate for lower position */
+    margin: calc(50vh - 80px) auto 0 auto; /* Moved up 100px from previous position */
+    max-height: calc(45vh + 80px); /* Increased height to compensate for higher position */
     position: relative;
   }
   
@@ -1825,7 +1825,7 @@ body {
   
   .mobile-social-hint {
     font-size: 0.75rem;
-    color: var(--secondary-text-color);
+    color: var(--primary-text-color);
     opacity: 0.7;
     text-align: center;
     margin: 0 0 20px 0;
@@ -1838,10 +1838,46 @@ body {
     display: flex !important;
     flex-direction: column;
     gap: 16px;
-    padding: 0 2px 20px 2px; /* 2px from edges */
+    padding: 0 10px 20px 10px; /* 10px from edges for bigger buttons */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     position: relative;
+  }
+  
+  /* Ensure all buttons in mobile social grid are full width */
+  .mobile-social-grid > * {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box;
+  }
+  
+  .mobile-social-grid a,
+  .mobile-social-grid button {
+    width: 100% !important;
+    max-width: none !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: var(--secondary-text-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+  
+  .mobile-social-grid a:hover,
+  .mobile-social-grid button:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--primary-text-color);
+    transform: translateY(-1px);
   }
   
   /* Gradient fade effects - positioned relative to the scrollable grid */
