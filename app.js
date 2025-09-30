@@ -103,7 +103,7 @@ const glbDefaults = {
     showAsParticles: true,
     showAs3DModel: false,
     // Tone mapping
-    toneMappingExposure: 0.74,
+    toneMappingExposure: 0.44,
     // Background color
     backgroundColor: '#0a0a0a',
     // Text colors
@@ -320,6 +320,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize text colors
     updateTextColors();
     
+    // Initialize tone mapping
+    updateToneMappingExposure();
+    
     // Initialize page navigation
     initializeNavigation();
     
@@ -337,14 +340,60 @@ document.addEventListener('DOMContentLoaded', async function() {
     } else {
         console.warn('Portfolio content not generated due to data loading failure');
     }
-  // Hide loading screen after initialization
-  setTimeout(() => {
-      const loadingScreen = document.getElementById('loading-screen');
-      if (loadingScreen) {
-          loadingScreen.classList.add('hidden');
-      }
-  }, 2000);
+    
+    // Hide loading screen immediately after initialization
+    hideLoadingScreen();
 });
+
+// Loading Screen Management
+function hideLoadingScreen() {
+    console.log('hideLoadingScreen called');
+    
+    // Try multiple approaches to find and remove loading elements
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingElements = document.querySelectorAll('.loading-screen, [id*="loading"], [class*="loading"]');
+    
+    console.log('Found loading screen by ID:', loadingScreen);
+    console.log('Found loading elements by selector:', loadingElements.length);
+    
+    if (loadingScreen) {
+        console.log('Removing loading screen by ID...');
+        loadingScreen.remove();
+        console.log('Loading screen removed from DOM');
+    }
+    
+    // Remove any other loading-related elements
+    loadingElements.forEach((element, index) => {
+        console.log(`Removing loading element ${index}:`, element);
+        element.remove();
+    });
+    
+    // Double-check - try to find any remaining elements
+    setTimeout(() => {
+        const remaining = document.querySelectorAll('.loading-screen, [id*="loading"], [class*="loading"]');
+        console.log('Remaining loading elements after cleanup:', remaining.length);
+        if (remaining.length > 0) {
+            console.warn('Still found loading elements:', remaining);
+        }
+        
+        // Also check for any elements containing "One moment please"
+        const textElements = document.querySelectorAll('*');
+        let foundText = false;
+        textElements.forEach(el => {
+            if (el.textContent && el.textContent.includes('One moment please')) {
+                console.warn('Found element with "One moment please" text:', el);
+                el.remove();
+                foundText = true;
+            }
+        });
+        
+        if (foundText) {
+            console.log('Removed elements containing "One moment please" text');
+        } else {
+            console.log('No elements found containing "One moment please" text');
+        }
+    }, 100);
+}
 
 // Accessibility Functions
 function initializeAccessibility() {
@@ -3752,12 +3801,8 @@ function initializeMobileConnect() {
         ];
         
         mobileSocialGrid.innerHTML = socialPlatforms.map(platform => `
-            <a href="${platform.url}" target="_blank" rel="noopener noreferrer" class="social-platform-btn">
-                <div class="social-icon">${platform.icon}</div>
-                <div class="platform-info">
-                    <div class="platform-name">${platform.name}</div>
-                    <div class="platform-handle">${platform.handle}</div>
-                </div>
+            <a href="${platform.url}" target="_blank" rel="noopener noreferrer" aria-label="${platform.name}" class="social-link">
+                ${platform.icon}
             </a>
         `).join('');
     }
