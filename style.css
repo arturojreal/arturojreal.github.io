@@ -84,19 +84,39 @@ html {
   background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+  overflow: hidden;
+  height: 100%;
 }
 
 body {
   background-color: var(--color-background);
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overscroll-behavior: none;
+  position: fixed;
+  width: 100%;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: inherit;
+}
+
+/* Prevent overscroll on all elements */
+* {
+  overscroll-behavior: none;
+  -webkit-overscroll-behavior: none;
+}
+
+/* Ensure consistent background on main containers */
+#app,
+canvas,
+.main-container {
+  background-color: var(--color-background) !important;
 }
 
 /* Typography */
@@ -1507,6 +1527,7 @@ body {
     gap: 30px;
     padding: 40px 20px 10px 20px;
     position: relative;
+    pointer-events: none;
   }
   
   .mobile-social-title {
@@ -1516,6 +1537,7 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
+    pointer-events: auto;
   }
   
   
@@ -1529,6 +1551,7 @@ body {
     width: 100%;
     justify-items: center;
     align-items: center;
+    pointer-events: auto;
   }
   
   /* Email button - force to bottom regardless of HTML order */
@@ -1575,6 +1598,7 @@ body {
       0 4px 16px rgba(0, 0, 0, 0.06),
       0 1px 4px rgba(0, 0, 0, 0.04),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    pointer-events: auto;
   }
   
   .mobile-social-grid a:hover,
