@@ -1389,6 +1389,16 @@ body {
   .mobile-social-grid {
     display: none !important; /* Hide mobile social grid on desktop */
   }
+
+  /* Show glass nav bar on desktop */
+  .desktop-nav.main-nav {
+    display: flex !important;
+  }
+
+  /* Show desktop social icons */
+  .desktop-social {
+    display: flex !important;
+  }
 }
 
 /* Mobile Debug Panel Styles */
@@ -1468,41 +1478,13 @@ body {
   }
 }
 
-.desktop-nav.main-nav {
-  display: none !important; /* Hidden for GitHub Pages launch */
-}
-
-.desktop-social {
-  display: flex !important;
-}
-
-/* Bigger social links when navbar is hidden */
-.social-link {
-  width: clamp(48px, 8vw, 64px);
-  height: clamp(48px, 8vw, 64px);
-  border-radius: clamp(12px, 3vw, 18px);
-}
-
-.social-links {
-  gap: clamp(16px, 3vw, 24px);
-  padding: clamp(16px, 3vw, 24px);
-}
-
-.social-grid {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
+/* Nav restored — removed launch-hidden override */
 
 /* Mobile Media Query */
 @media (max-width: 767px) {
   .desktop-nav.main-nav {
     display: none !important; /* Hide desktop nav on mobile */
   }
-  
-  /* Also hide mobile navbar for GitHub Pages launch */
-  .mobile-nav {
-    display: none !important;
-  }
-  
   .desktop-social {
     display: none !important;
   }
