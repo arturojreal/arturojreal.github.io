@@ -410,9 +410,25 @@
                     <button class="mobile-nav-btn nav-btn" data-page="vfx">
                         <span class="btn-text">VFX</span>
                     </button>
-                    <button class="mobile-nav-btn nav-btn" data-page="projects">
-                        <span class="btn-text">Projects</span>
-                    </button>
+                    <div class="nav-dropdown mobile-dropdown" id="projects-dropdown-mobile">
+                        <button class="mobile-nav-btn nav-btn nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="projects-menu-mobile">
+                            <span class="btn-text">Projects</span>
+                            <svg class="dropdown-chevron" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <ul class="nav-dropdown-menu" id="projects-menu-mobile" role="menu" aria-label="Projects">
+                            <li role="none">
+                                <a href="/snapbooth" class="nav-dropdown-item" role="menuitem">
+                                    <span class="dropdown-item-icon">📸</span>
+                                    <span class="dropdown-item-text">
+                                        <span class="dropdown-item-name">Snapbooth</span>
+                                        <span class="dropdown-item-desc">Browser-based photobooth</span>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <button class="mobile-nav-btn nav-btn" data-page="about">
                         <span class="btn-text">About</span>
                     </button>
@@ -445,9 +461,25 @@
                     <button class="nav-btn" data-page="vfx" aria-describedby="vfx-desc">
                         VFX
                     </button>
-                    <button class="nav-btn" data-page="projects" aria-describedby="projects-desc">
-                        Projects
-                    </button>
+                    <div class="nav-dropdown" id="projects-dropdown">
+                        <button class="nav-btn nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="projects-menu">
+                            Projects
+                            <svg class="dropdown-chevron" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <ul class="nav-dropdown-menu" id="projects-menu" role="menu" aria-label="Projects">
+                            <li role="none">
+                                <a href="/snapbooth" class="nav-dropdown-item" role="menuitem">
+                                    <span class="dropdown-item-icon">📸</span>
+                                    <span class="dropdown-item-text">
+                                        <span class="dropdown-item-name">Snapbooth</span>
+                                        <span class="dropdown-item-desc">Browser-based photobooth</span>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <button class="nav-btn" data-page="about" aria-describedby="about-desc">
                         About
                     </button>
@@ -627,5 +659,57 @@
     </div>
 
     <script type="module" src="app.js"></script>
+
+    <!-- Projects Dropdown JS -->
+    <script>
+    (function() {
+        function initDropdowns() {
+            document.querySelectorAll('.nav-dropdown').forEach(function(dropdown) {
+                var trigger = dropdown.querySelector('.nav-dropdown-trigger');
+                var menu = dropdown.querySelector('.nav-dropdown-menu');
+                if (!trigger || !menu) return;
+
+                function open() {
+                    trigger.setAttribute('aria-expanded', 'true');
+                    dropdown.classList.add('is-open');
+                }
+                function close() {
+                    trigger.setAttribute('aria-expanded', 'false');
+                    dropdown.classList.remove('is-open');
+                }
+                function toggle() {
+                    dropdown.classList.contains('is-open') ? close() : open();
+                }
+
+                trigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggle();
+                });
+
+                // Keyboard: Enter/Space toggle, Escape closes
+                trigger.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+                    if (e.key === 'Escape') { close(); trigger.focus(); }
+                });
+
+                // Close on outside click
+                document.addEventListener('click', function(e) {
+                    if (!dropdown.contains(e.target)) close();
+                });
+
+                // Close on Escape anywhere inside
+                dropdown.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') { close(); trigger.focus(); }
+                });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDropdowns);
+        } else {
+            initDropdowns();
+        }
+    })();
+    </script>
 </body>
 </html>
