@@ -1389,16 +1389,6 @@ body {
   .mobile-social-grid {
     display: none !important; /* Hide mobile social grid on desktop */
   }
-
-  /* Show glass nav bar on desktop */
-  .desktop-nav.main-nav {
-    display: flex !important;
-  }
-
-  /* Show desktop social icons */
-  .desktop-social {
-    display: flex !important;
-  }
 }
 
 /* Mobile Debug Panel Styles */
@@ -1478,13 +1468,41 @@ body {
   }
 }
 
-/* Nav restored — removed launch-hidden override */
+.desktop-nav.main-nav {
+  display: none !important; /* Hidden for GitHub Pages launch */
+}
+
+.desktop-social {
+  display: flex !important;
+}
+
+/* Bigger social links when navbar is hidden */
+.social-link {
+  width: clamp(48px, 8vw, 64px);
+  height: clamp(48px, 8vw, 64px);
+  border-radius: clamp(12px, 3vw, 18px);
+}
+
+.social-links {
+  gap: clamp(16px, 3vw, 24px);
+  padding: clamp(16px, 3vw, 24px);
+}
+
+.social-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
 
 /* Mobile Media Query */
 @media (max-width: 767px) {
   .desktop-nav.main-nav {
     display: none !important; /* Hide desktop nav on mobile */
   }
+  
+  /* Also hide mobile navbar for GitHub Pages launch */
+  .mobile-nav {
+    display: none !important;
+  }
+  
   .desktop-social {
     display: none !important;
   }
@@ -2441,127 +2459,4 @@ html[data-color-scheme="light"] .item-duration {
 
 .tweaked-status {
     min-height: 16px;
-}
-
-/* ─── PROJECTS DROPDOWN ──────────────────────────────────────────────────── */
-
-/* Allow overflow on nav so dropdown can escape */
-.desktop-nav.main-nav {
-    overflow: visible !important;
-}
-
-.nav-dropdown {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    z-index: 10;
-}
-
-/* Chevron icon inside trigger */
-.nav-dropdown-trigger {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-}
-
-.dropdown-chevron {
-    width: 10px;
-    height: 6px;
-    flex-shrink: 0;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    opacity: 0.6;
-}
-
-.nav-dropdown.is-open .dropdown-chevron {
-    transform: rotate(180deg);
-    opacity: 1;
-}
-
-/* Dropdown menu panel */
-.nav-dropdown-menu {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%) translateY(-6px);
-    min-width: 220px;
-    background: rgba(22, 20, 28, 0.92);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 8px;
-    list-style: none;
-    margin: 0;
-    box-shadow:
-        0 20px 48px rgba(0, 0, 0, 0.4),
-        0 4px 12px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.07);
-    opacity: 0;
-    pointer-events: none;
-    transition:
-        opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 100;
-}
-
-/* Open state */
-.nav-dropdown.is-open .nav-dropdown-menu {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateX(-50%) translateY(0);
-}
-
-/* Menu items */
-.nav-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.85);
-    transition: background 0.18s ease, color 0.18s ease;
-    cursor: pointer;
-}
-
-.nav-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: #fff;
-}
-
-.dropdown-item-icon {
-    font-size: 1.25rem;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
-.dropdown-item-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.dropdown-item-name {
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: #fffffc;
-}
-
-.dropdown-item-desc {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.45);
-    font-weight: 400;
-}
-
-/* Mobile dropdown — panel opens downward, full-width-ish */
-.mobile-dropdown .nav-dropdown-menu {
-    left: 0;
-    transform: translateX(0) translateY(-6px);
-    min-width: 200px;
-}
-
-.mobile-dropdown.is-open .nav-dropdown-menu {
-    transform: translateX(0) translateY(0);
 }
