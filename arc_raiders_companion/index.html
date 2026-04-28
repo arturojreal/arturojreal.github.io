@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speranza Hub — Arturo J. Real</title>
+  <meta name="description" content="Speranza Hub is a free iOS companion app and home screen widget for ARC Raiders. Track live game events, map conditions, traders, and more — at a glance.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:              #0a0c0f;
+      --bg-card:         rgba(16, 24, 36, 0.65);
+      --bg-card-hover:   rgba(22, 32, 48, 0.75);
+      --text-primary:    #fffffc;
+      --text-secondary:  #b8c8d8;
+      --text-muted:      #6e8499;
+      --accent:          #6ec6f5;
+      --accent-deep:     #2a7aaa;
+      --accent-deeper:   #0f4a6e;
+      --border:          rgba(110, 198, 245, 0.07);
+      --border-accent:   rgba(110, 198, 245, 0.22);
+      --radius-card:     1.5rem;
+      --radius-pill:     9999px;
+      --ease:            cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── GRAIN ──────────────────────────────────────────────── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── BACKGROUND BLURS ───────────────────────────────────── */
+    .bg-blur {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(120px);
+      z-index: 0;
+    }
+    .bg-blur-1 {
+      width: 55vw; height: 55vw;
+      top: -15%; right: -10%;
+      background: rgba(42, 122, 170, 0.18);
+      opacity: 0.5;
+    }
+    .bg-blur-2 {
+      width: 45vw; height: 45vw;
+      bottom: -10%; left: -5%;
+      background: rgba(15, 74, 110, 0.15);
+      opacity: 0.4;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 0;
+      margin-bottom: 64px;
+    }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: color 200ms var(--ease);
+    }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 16px; height: 16px; }
+
+    .nav-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.7;
+    }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 64px;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-pill);
+      padding: 5px 14px;
+      margin-bottom: 24px;
+      background: rgba(110, 198, 245, 0.06);
+    }
+
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .hero-subtitle {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: var(--accent);
+      opacity: 0.8;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 600px;
+    }
+
+    /* ─── SECTION LABEL ──────────────────────────────────────── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* ─── CARD ───────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px 40px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: background 300ms var(--ease), border-color 300ms var(--ease);
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+    }
+
+    /* ─── FEATURES ───────────────────────────────────────────── */
+    .features-section {
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .feature-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 24px;
+      transition: border-color 250ms var(--ease);
+    }
+    .feature-item:hover { border-color: var(--border-accent); }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .feature-item h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-item p {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─── EVENT TABLE ────────────────────────────────────────── */
+    .events-section {
+      margin-bottom: 48px;
+    }
+
+    .event-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .event-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      transition: border-color 200ms var(--ease);
+    }
+    .event-row:hover { border-color: var(--border-accent); }
+
+    .event-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .event-name {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* ─── ABOUT ──────────────────────────────────────────────── */
+    .about-section {
+      margin-bottom: 48px;
+    }
+
+    .about-card p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .about-card p:last-of-type { margin-bottom: 0; }
+
+    .disclaimer {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px;
+    }
+
+    /* ─── CTA ────────────────────────────────────────────────── */
+    .cta-section {
+      margin-bottom: 0;
+    }
+
+    .cta-card {
+      text-align: center;
+      padding: 56px 40px;
+      background: linear-gradient(135deg, rgba(42,122,170,0.18) 0%, rgba(16,24,36,0.65) 60%);
+      border-color: var(--border-accent);
+    }
+
+    .cta-card h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+      margin-bottom: 14px;
+    }
+
+    .cta-card p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 460px;
+      margin: 0 auto 36px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #0a0c0f;
+      background: var(--accent);
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      box-shadow: 0 12px 32px -6px rgba(42, 122, 170, 0.5);
+      transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), background 200ms var(--ease);
+    }
+    .btn-primary:hover {
+      background: #9ad8f8;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 18px 40px -6px rgba(42, 122, 170, 0.65);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary svg { width: 16px; height: 16px; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      background: rgba(110, 198, 245, 0.06);
+      transition: background 200ms var(--ease), transform 150ms var(--ease);
+    }
+    .btn-ghost:hover {
+      background: rgba(110, 198, 245, 0.12);
+      transform: translateY(-1px);
+    }
+    .btn-ghost svg { width: 14px; height: 14px; }
+
+    /* ─── FREE BADGE ─────────────────────────────────────────── */
+    .free-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.08);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px;
+      margin-top: 20px;
+    }
+
+    .free-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px rgba(74, 222, 128, 0.7);
+    }
+
+    /* ─── DIVIDERS ───────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 56px 0;
+    }
+
+    /* ─── FADE IN ────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease) forwards;
+    }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.15s; }
+    .fade-up:nth-child(3) { animation-delay: 0.25s; }
+    .fade-up:nth-child(4) { animation-delay: 0.35s; }
+    .fade-up:nth-child(5) { animation-delay: 0.45s; }
+
+    /* ─── MOBILE ─────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .page-wrap { padding: 0 20px 64px; }
+      nav { margin-bottom: 48px; }
+      .hero-title { font-size: 3rem; }
+      .card { padding: 28px 24px; }
+      .cta-card { padding: 40px 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .event-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+  <div class="bg-blur bg-blur-1"></div>
+  <div class="bg-blur bg-blur-2"></div>
+
+  <div class="page-wrap">
+
+    <!-- NAV -->
+    <nav>
+      <a href="/" class="nav-back">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 12L6 8l4-4"/>
+        </svg>
+        Arturo J. Real
+      </a>
+      <span class="nav-tag">Project</span>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="fade-up">
+        <span class="hero-eyebrow">iOS · WidgetKit</span>
+      </div>
+      <h1 class="hero-title fade-up">Speranza Hub</h1>
+      <p class="hero-subtitle fade-up">ARC Raiders Companion App</p>
+      <p class="hero-description fade-up">
+        A free iOS companion app and home screen widget for ARC Raiders. Track live game events,
+        active map conditions, and upcoming rotations across all five maps — at a glance,
+        without opening the game.
+      </p>
+      <div class="fade-up">
+        <span class="free-badge"><span class="free-dot"></span>Free · No ads · No subscriptions</span>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FEATURES -->
+    <section class="features-section fade-up">
+      <p class="section-label">Features</p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <span class="feature-icon">🪟</span>
+          <h3>Home Screen Widget</h3>
+          <p>Glanceable event timers in small, medium, and large sizes — always current, no taps required.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🗺️</span>
+          <h3>Five-Map Tracking</h3>
+          <p>Active and upcoming conditions across all ARC Raiders maps, with themed iconography per event type.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔄</span>
+          <h3>Auto-Updates</h3>
+          <p>Event schedules refresh automatically. New events propagate to the widget without app updates.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🛡️</span>
+          <h3>Graceful Fallbacks</h3>
+          <p>Unknown events display with a generic icon and raw name. Multi-source API fallback chain keeps data live.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- EVENT COVERAGE -->
+    <section class="events-section fade-up">
+      <p class="section-label">Event coverage</p>
+      <div class="event-grid">
+        <div class="event-row">
+          <span class="event-dot" style="background:#4f5ab5;"></span>
+          <span class="event-name">Night Raid</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#5ba8e5;"></span>
+          <span class="event-name">Electromagnetic Storm</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#c0392b;"></span>
+          <span class="event-name">Matriarch</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#d4a017;"></span>
+          <span class="event-name">Bird City</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#7dba6e;"></span>
+          <span class="event-name">Husk Graveyard</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#2e7d32;"></span>
+          <span class="event-name">Harvester</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#607d8b;"></span>
+          <span class="event-name">Hidden Bunker</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#b5945a;"></span>
+          <span class="event-name">Uncovered Caches</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#00bcd4;"></span>
+          <span class="event-name">Probes</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#e65100;"></span>
+          <span class="event-name">Launch Tower Loot</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#8d1c1c;"></span>
+          <span class="event-name">Locked Gate</span>
+        </div>
+        <div class="event-row">
+          <span class="event-dot" style="background:#a8d8ea;"></span>
+          <span class="event-name">Cold Snap</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ABOUT THE PROJECT -->
+    <section class="about-section fade-up">
+      <p class="section-label">About the project</p>
+      <div class="card about-card">
+        <p>
+          Speranza Hub grew out of a simple frustration: having to open ARC Raiders — or
+          switch between community Discord servers and spreadsheets — just to know what's
+          happening on the maps right now. The game's event system is deep and time-sensitive,
+          and a glanceable widget felt like the obvious solution.
+        </p>
+        <p>
+          Event data is sourced from community-maintained APIs with a built-in fallback chain
+          (MetaForge → Mahcks Data → hardcoded 24-hour UTC rotation), so the widget stays
+          accurate even when one upstream source is unavailable. All event-to-icon mapping is
+          handled locally, meaning the visual language stays consistent regardless of what
+          the API returns.
+        </p>
+        <p>
+          The app is completely free. There are no ads, no subscriptions, and no data collection.
+          An optional donation button is included for players who want to support development.
+        </p>
+
+        <p class="disclaimer">
+          Speranza Hub is a fan-made community tool. It is not affiliated with, endorsed by, or
+          associated with Embark Studios or ARC Raiders. All game data is sourced from
+          community-maintained APIs. No copyrighted game assets are used.
+        </p>
+
+        <div class="tech-tags">
+          <span class="tag">Swift</span>
+          <span class="tag">SwiftUI</span>
+          <span class="tag">WidgetKit</span>
+          <span class="tag">App Groups</span>
+          <span class="tag">iOS 17+</span>
+          <span class="tag">Community APIs</span>
+          <span class="tag">XcodeGen</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CTA -->
+    <section class="cta-section fade-up">
+      <div class="card cta-card">
+        <h2>Stay on top of every map</h2>
+        <p>
+          Speranza Hub is coming to the App Store. Questions or feedback? Get in touch.
+        </p>
+        <div class="cta-buttons">
+          <a href="mailto:arturojreal+contact@gmail.com?subject=Speranza%20Hub%20Inquiry" class="btn-primary">
+            Get in touch
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 16L16 2M16 2H8M16 2v8"/>
+            </svg>
+          </a>
+          <a href="/arc_raiders_companion/privacy-policy.html" class="btn-ghost">
+            Privacy policy
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12L12 2M12 2H6M12 2v6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
