@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Arturo J. Real</title>
+  <meta name="description" content="Apps and tools built by Arturo J. Real — Archivist, Snapbooth, and Speranza Hub.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:              #0a0a0a;
+      --bg-card:         rgba(29, 27, 32, 0.6);
+      --bg-card-hover:   rgba(40, 38, 43, 0.75);
+      --text-primary:    #fffffc;
+      --text-secondary:  #cbc3d7;
+      --text-muted:      #958e9f;
+      --accent:          #d8aa5a;
+      --border:          rgba(255,255,255,0.06);
+      --border-accent:   rgba(216,170,90,0.2);
+      --radius-card:     1.5rem;
+      --radius-pill:     9999px;
+      --ease:            cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    body { background: var(--bg); min-height: 100vh; overflow-x: hidden; }
+
+    /* ─── GRAIN ──────────────────────────────────────────────── */
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 100;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── BACKGROUND BLURS ───────────────────────────────────── */
+    .bg-blur { position: fixed; border-radius: 50%; pointer-events: none; filter: blur(120px); z-index: 0; }
+    .bg-blur-1 { width: 50vw; height: 50vw; top: -10%; right: -10%; background: rgba(176,125,42,0.12); opacity: 0.5; }
+    .bg-blur-2 { width: 45vw; height: 45vw; bottom: -10%; left: -5%; background: rgba(107,56,212,0.08); opacity: 0.35; }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────── */
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 820px; margin: 0 auto; padding: 0 24px 80px;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 0 0; margin-bottom: 64px;
+    }
+
+    .nav-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text-muted); text-decoration: none;
+      font-size: 13px; font-weight: 500; letter-spacing: 0.01em;
+      transition: color 200ms var(--ease);
+    }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 16px; height: 16px; }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero { margin-bottom: 64px; }
+
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      line-height: 1.05; letter-spacing: -0.03em;
+      color: var(--text-primary); margin-bottom: 24px;
+    }
+
+    .hero-description {
+      font-size: 1.125rem; line-height: 1.75;
+      color: var(--text-secondary); font-weight: 400; max-width: 540px;
+    }
+
+    /* ─── PROJECT CARDS ──────────────────────────────────────── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      display: flex; flex-direction: column;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden; text-decoration: none;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      transition: transform 0.35s var(--ease), background 0.3s var(--ease),
+                  border-color 0.3s var(--ease), box-shadow 0.35s var(--ease);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    }
+    .project-card:hover {
+      transform: translateY(-6px) scale(1.015);
+      background: var(--bg-card-hover);
+      box-shadow: 0 20px 56px rgba(0,0,0,0.2);
+    }
+
+    .project-card-header {
+      height: 140px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.25rem; position: relative; overflow: hidden;
+    }
+    .project-card-header::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(10,10,10,0.45) 100%);
+    }
+
+    .project-card-body {
+      padding: 20px 24px 26px; flex: 1; display: flex; flex-direction: column;
+    }
+
+    .project-platforms {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+    }
+
+    .platform-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+    }
+
+    .project-name {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-size: 1.25rem; font-weight: 800;
+      letter-spacing: -0.02em; color: var(--text-primary);
+      margin-bottom: 8px; line-height: 1.2;
+    }
+
+    .project-desc {
+      font-size: 0.8125rem; line-height: 1.65;
+      color: var(--text-secondary); opacity: 0.8; flex: 1; margin-bottom: 0;
+    }
+
+    .project-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 18px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: gap 150ms var(--ease);
+    }
+    .project-card:hover .project-link { gap: 9px; }
+
+    /* ─── FADE IN ────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { opacity: 0; animation: fadeUp 0.9s var(--ease) forwards; }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.15s; }
+    .fade-up:nth-child(3) { animation-delay: 0.25s; }
+    .fade-up:nth-child(4) { animation-delay: 0.35s; }
+
+    /* ─── MOBILE ─────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .page-wrap { padding: 0 20px 64px; }
+      nav { margin-bottom: 48px; }
+      .hero-title { font-size: 3rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+  <div class="bg-blur bg-blur-1"></div>
+  <div class="bg-blur bg-blur-2"></div>
+
+  <div class="page-wrap">
+
+    <nav>
+      <a href="/" class="nav-back">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 12L6 8l4-4"/>
+        </svg>
+        Arturo J. Real
+      </a>
+    </nav>
+
+    <section class="hero">
+      <h1 class="hero-title fade-up">Projects</h1>
+      <p class="hero-description fade-up">Apps and tools I build in my spare time — iOS apps, web experiments, and whatever else captures my attention.</p>
+    </section>
+
+    <div class="projects-grid fade-up">
+
+      <!-- Archivist -->
+      <a class="project-card" href="/archivist/">
+        <div class="project-card-header" style="background: linear-gradient(135deg, #7a5210 0%, #b07d2a 55%, #1a1207 100%);">
+          🗃️
+        </div>
+        <div class="project-card-body">
+          <div class="project-platforms">
+            <span class="platform-tag">iOS</span>
+            <span class="platform-tag">Apple Intelligence</span>
+          </div>
+          <h2 class="project-name">Archivist</h2>
+          <p class="project-desc">Capture-first professional memory bank. Record work stories and let on-device AI structure them into archive entries, memoirs, and resume bullets.</p>
+          <span class="project-link" style="color: #f5c97a;">
+            View project
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 10L10 1M10 1H4.5M10 1v5.5"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- Snapbooth -->
+      <a class="project-card" href="/snapbooth/">
+        <div class="project-card-header" style="background: linear-gradient(135deg, #2d1b6b 0%, #6b38d4 55%, #0d0a1a 100%);">
+          📸
+        </div>
+        <div class="project-card-body">
+          <div class="project-platforms">
+            <span class="platform-tag">Web</span>
+            <span class="platform-tag">Zero-install</span>
+          </div>
+          <h2 class="project-name">Snapbooth</h2>
+          <p class="project-desc">Browser-based photobooth for events and gatherings. Guests open a URL, take photos, and get a shareable link instantly — no app, no account.</p>
+          <span class="project-link" style="color: #d0bcff;">
+            View project
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 10L10 1M10 1H4.5M10 1v5.5"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- Speranza Hub -->
+      <a class="project-card" href="/arc_raiders_companion/">
+        <div class="project-card-header" style="background: linear-gradient(135deg, #0f3a55 0%, #2a7aaa 55%, #050e17 100%);">
+          🎮
+        </div>
+        <div class="project-card-body">
+          <div class="project-platforms">
+            <span class="platform-tag">iOS</span>
+            <span class="platform-tag">WidgetKit</span>
+          </div>
+          <h2 class="project-name">Speranza Hub</h2>
+          <p class="project-desc">Free ARC Raiders companion app with home screen widgets. Track live game events and map conditions across all five maps — at a glance.</p>
+          <span class="project-link" style="color: #6ec6f5;">
+            View project
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 10L10 1M10 1H4.5M10 1v5.5"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</body>
+</html>
