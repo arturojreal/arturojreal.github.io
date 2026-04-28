@@ -467,7 +467,12 @@ function initializeNavigation() {
 
 function navigateToPage(pageId) {
     console.log('Navigating to:', pageId);
-    
+
+    if (pageId === 'projects') {
+        window.location.href = '/projects/';
+        return;
+    }
+
     // Hide all pages
     const allPages = document.querySelectorAll('.page');
     allPages.forEach(page => {
