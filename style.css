@@ -1286,9 +1286,14 @@ body {
   min-height: clamp(56px, 8vw, 72px);
 }
 
-/* Social Links (desktop + mobile) */
+/* Social Links — independently positioned at the bottom of #home-page */
 .desktop-social {
   display: flex;
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
 }
 
 /* Mobile Social Connect Page */
