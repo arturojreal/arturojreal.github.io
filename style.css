@@ -1490,7 +1490,12 @@ body {
   .desktop-nav.main-nav {
     display: none !important; /* Hide desktop nav on mobile */
   }
-  
+
+  /* Push social icons above mobile browser chrome (~83px) + home indicator */
+  .desktop-social {
+    bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+
   .mobile-social-container {
     display: none !important;
   }
