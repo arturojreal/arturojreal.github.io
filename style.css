@@ -1286,9 +1286,9 @@ body {
   min-height: clamp(56px, 8vw, 72px);
 }
 
-/* Desktop Social Links */
+/* Social Links (desktop + mobile) */
 .desktop-social {
-  display: none;
+  display: flex;
 }
 
 /* Mobile Social Connect Page */
@@ -1393,6 +1393,10 @@ body {
   .desktop-nav.main-nav {
     display: flex !important;
   }
+
+  .desktop-social {
+    display: flex !important;
+  }
 }
 
 /* Mobile Debug Panel Styles */
@@ -1482,10 +1486,6 @@ body {
     display: none !important; /* Hide desktop nav on mobile */
   }
   
-  .desktop-social {
-    display: none !important;
-  }
-
   .mobile-social-container {
     display: none !important;
   }
