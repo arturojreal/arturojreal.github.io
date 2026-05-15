@@ -1051,6 +1051,7 @@ body {
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100svh; /* small viewport height — always within visible area on mobile */
 }
 
 .page {
@@ -1491,9 +1492,27 @@ body {
     display: none !important; /* Hide desktop nav on mobile */
   }
 
-  /* Push social icons above mobile browser chrome (~83px) + home indicator */
+  /* Switch home page to in-flow flex layout so content can't escape the visible viewport */
+  #home-page {
+    justify-content: flex-end;
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+    gap: 12px;
+  }
+
+  .name-section {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    width: 90vw;
+    padding: 0;
+  }
+
   .desktop-social {
-    bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
   }
 
   .mobile-social-container {
@@ -2298,7 +2317,6 @@ html[data-color-scheme="light"] .item-duration {
   
   .name-section {
     padding: 20px;
-    bottom: 10%; /* Move closer to bottom, below middle of page */
   }
   
   /* Navigation stays single-line on mobile with new liquid glass design */
@@ -2338,7 +2356,6 @@ html[data-color-scheme="light"] .item-duration {
   
   .name-section {
     padding: 15px;
-    bottom: 5%; /* Move even closer to bottom on smaller screens */
   }
   
   .portfolio-grid {
