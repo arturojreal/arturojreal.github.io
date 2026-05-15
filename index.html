@@ -96,8 +96,8 @@
             <div class="control-group">
                 <label for="particle-color">Color:</label>
                 <div class="control-input-group">
-                    <input type="color" id="particle-color" value="#d8aa5a">
-                    <input type="text" id="particle-color-hex" placeholder="#d8aa5a" maxlength="7">
+                    <input type="color" id="particle-color" value="#ffffff">
+                    <input type="text" id="particle-color-hex" placeholder="#ffffff" maxlength="7">
                 </div>
             </div>
             <div class="control-group">
@@ -238,8 +238,8 @@
             <div class="control-group">
                 <label for="custom-color">Model Color Override:</label>
                 <div class="control-input-group">
-                    <input type="color" id="custom-color" value="#d8aa5a">
-                    <input type="text" id="custom-color-hex" placeholder="#d8aa5a" maxlength="7">
+                    <input type="color" id="custom-color" value="#ffffff">
+                    <input type="text" id="custom-color-hex" placeholder="#ffffff" maxlength="7">
                 </div>
             </div>
             <div class="control-group">
@@ -499,7 +499,7 @@
         <!-- Photography Page -->
         <section id="photography-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>My photography</h1>
             </header>
             
@@ -511,7 +511,7 @@
         <!-- Film Page -->
         <section id="film-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>My films and videos</h1>
             </header>
             
@@ -523,7 +523,7 @@
         <!-- VFX Page -->
         <section id="vfx-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>My 3D and VFX work</h1>
             </header>
             
@@ -535,7 +535,7 @@
         <!-- Projects Page -->
         <section id="projects-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>Projects I've worked on</h1>
             </header>
             <div class="projects-grid" role="list" aria-label="Project items">
@@ -609,7 +609,7 @@
         <!-- About Page -->
         <section id="about-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>About me</h1>
             </header>
             <div class="about-wrapper">
@@ -629,9 +629,7 @@
         <!-- Mobile Social Connect Page -->
         <section id="connect-page" class="page portfolio-page hidden" role="main">
             <header class="page-header">
-                <button class="back-btn" onclick="navigateToPage('home')">
-                    <span aria-hidden="true">←</span> Back to Home
-                </button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>Let's connect!</h1>
             </header>
             <div class="connect-wrapper">

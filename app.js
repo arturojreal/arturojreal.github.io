@@ -1,3 +1,6 @@
+// Set to true to show the debug control panel (model upload, particle tuning, etc.)
+const DEBUG_MODE = false;
+
 import * as THREE from 'three';
 import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -151,7 +154,7 @@ const plyDefaults = {
     solidModelRotationX: 0,
     solidModelRotationY: 0,
     solidModelRotationZ: 0,
-    customColor: '#d8aa5a',
+    customColor: '#ffffff',
     useCustomColor: true,
     particleEffectsEnabled: true,
     showAsParticles: true,
@@ -165,7 +168,7 @@ const plyDefaults = {
     secondaryTextColor: '#cccccc',
     accentTextColor: '#d8aa5a',
     // Particle controls
-    particleColor: '#d8aa5a',
+    particleColor: '#ffffff',
     particleForce: 0.58,
     particleMinAlpha: 0.04,
     particleMaxAlpha: 0.25,
@@ -314,8 +317,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize enhanced model system after Three.js is ready
     initializeEnhancedModelSystem();
     
-    // Initialize debug panel
-    initializeDebugPanel();
+    // Initialize debug panel (only when DEBUG_MODE is enabled)
+    if (DEBUG_MODE) {
+        initializeDebugPanel();
+    } else {
+        const debugPanel = document.getElementById('particle-debug');
+        if (debugPanel) debugPanel.remove();
+    }
     
     // Initialize text colors
     updateTextColors();
