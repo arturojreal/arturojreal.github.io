@@ -47,17 +47,17 @@
         <div class="resize-handle"></div>
         <div class="debug-content">
             <!-- MODEL LOADING & SELECTION -->
-            <h3>📁 Model Loading</h3>
+            <h3>📁 3D Model Loading</h3>
             <div class="control-group">
                 <label>Currently Active:</label>
                 <div class="control-input-group">
-                    <span id="current-model-display" class="model-display">Default GLB (arturo_site.glb)</span>
+                    <span id="current-model-display" class="model-display">ARTURO.ply (Default)</span>
                 </div>
             </div>
             <div class="control-group">
-                <label for="load-model">Load New Model:</label> <!-- Upload GLB/GLTF or PLY files -->
+                <label for="load-model">Load New Model:</label>
                 <div class="control-input-group">
-                    <input type="file" id="load-model" accept=".glb,.gltf,.ply" />
+                    <input type="file" id="load-model" accept=".glb,.gltf,.ply,.obj,.stl" />
                     <button id="apply-model" class="apply-btn" disabled>Apply Model</button>
                 </div>
             </div>
@@ -69,34 +69,71 @@
             </div>
 
 
-            <!-- BASIC PARTICLE SETTINGS -->
-            <h3>⚙️ Basic Particle Settings</h3>
+            <!-- UNIFIED PARTICLE SYSTEM -->
+            <h3>⚙️ Particle System</h3>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="particle-effects-enabled" checked> Enable Particle Effects
+                </label>
+            </div>
+            
+            <!-- Visual Properties -->
+            <h4>🎨 Visual Properties</h4>
             <div class="control-group">
                 <label for="particle-size">Size:</label>
                 <div class="control-input-group">
-                    <input type="range" id="particle-size" min="0.001" max="5.0" step="0.001" value="0.4">
-                    <input type="number" id="particle-size-num" min="0.001" max="5.0" step="0.001" value="0.4">
-                </div>
-            </div>
-            <div class="control-group">
-                <label for="particle-opacity">Opacity:</label>
-                <div class="control-input-group">
-                    <input type="range" id="particle-opacity" min="0.01" max="1.0" step="0.01" value="0.9">
-                    <input type="number" id="particle-opacity-num" min="0.01" max="1.0" step="0.01" value="0.9">
+                    <input type="range" id="particle-size" min="0.001" max="5.0" step="0.001" value="1.201">
+                    <input type="number" id="particle-size-num" min="0.001" max="5.0" step="0.001" value="1.201">
                 </div>
             </div>
             <div class="control-group">
                 <label for="particle-density">Density:</label>
                 <div class="control-input-group">
-                    <input type="range" id="particle-density" min="500" max="100000" step="500" value="42000">
-                    <input type="number" id="particle-density-num" min="500" max="100000" step="500" value="42000">
+                    <input type="range" id="particle-density" min="500" max="100000" step="500" value="85000">
+                    <input type="number" id="particle-density-num" min="500" max="100000" step="500" value="85000">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="particle-color">Color:</label>
+                <div class="control-input-group">
+                    <input type="color" id="particle-color" value="#ffffff">
+                    <input type="text" id="particle-color-hex" placeholder="#ffffff" maxlength="7">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="particle-opacity">Opacity:</label>
+                <div class="control-input-group">
+                    <input type="range" id="particle-opacity" min="0.01" max="1.0" step="0.01" value="0.25">
+                    <input type="number" id="particle-opacity-num" min="0.01" max="1.0" step="0.01" value="0.25">
+                </div>
+            </div>
+            
+            <!-- Interaction Properties -->
+            <h4>🎯 Touch & Interaction</h4>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="show-touch-radius"> Show Touch Radius
+                </label>
+            </div>
+            <div class="control-group">
+                <label for="interaction-radius">Touch Radius:</label>
+                <div class="control-input-group">
+                    <input type="range" id="interaction-radius" min="0.1" max="20.0" step="0.1" value="13.5">
+                    <input type="number" id="interaction-radius-num" min="0.1" max="20.0" step="0.1" value="13.5">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="disperse-force">Disperse Force:</label>
+                <div class="control-input-group">
+                    <input type="range" id="disperse-force" min="0.01" max="5.0" step="0.01" value="1.38">
+                    <input type="number" id="disperse-force-num" min="0.01" max="5.0" step="0.01" value="1.38">
                 </div>
             </div>
             <div class="control-group">
                 <label for="scale-factor">Scale:</label>
                 <div class="control-input-group">
-                    <input type="range" id="scale-factor" min="0.1" max="50" step="0.1" value="12">
-                    <input type="number" id="scale-factor-num" min="0.1" max="50" step="0.1" value="12">
+                    <input type="range" id="scale-factor" min="0.1" max="50" step="0.1" value="16.7">
+                    <input type="number" id="scale-factor-num" min="0.1" max="50" step="0.1" value="16.7">
                 </div>
             </div>
             <div class="control-group">
@@ -120,13 +157,8 @@
                     <input type="number" id="model-position-z-num" min="-10" max="10" step="0.1" value="0">
                 </div>
             </div>
-            <div class="control-group">
-                <label>
-                    <input type="checkbox" id="particle-effects-enabled" checked> Enable Particle Effects
-                </label>
-            </div>
             
-            <!-- PARTICLE ROTATION CONTROLS -->
+            <!-- MODEL ROTATION CONTROLS -->
             <div class="control-group">
                 <label for="model-rotation-x">Particle Rotation X:</label>
                 <div class="control-input-group">
@@ -212,53 +244,37 @@
             </div>
             <div class="control-group">
                 <label>
-                    <input type="checkbox" id="use-custom-color"> Use Custom Color
+                    <input type="checkbox" id="use-custom-color" checked> Use Custom Color
                 </label>
             </div>
+            
 
-            <!-- CLASSIC PARTICLE INTERACTION -->
-            <h3>🎯 Classic Interaction System</h3>
-            <p class="control-note">💡 Traditional mouse/touch particle dispersion</p>
-            <div class="control-group">
-                <label for="interaction-radius">Touch Radius:</label>
-                <div class="control-input-group">
-                    <input type="range" id="interaction-radius" min="0.1" max="20.0" step="0.1" value="2.8">
-                    <input type="number" id="interaction-radius-num" min="0.1" max="20.0" step="0.1" value="2.8">
-                </div>
-            </div>
-            <div class="control-group">
-                <label for="disperse-force">Disperse Force:</label>
-                <div class="control-input-group">
-                    <input type="range" id="disperse-force" min="0.01" max="5.0" step="0.01" value="0.15">
-                    <input type="number" id="disperse-force-num" min="0.01" max="5.0" step="0.01" value="0.15">
-                </div>
-            </div>
             
             <!-- ANIMATION CONTROLS -->
             <h3>🔄 Animation</h3>
             <div class="control-group">
-                <label for="rotation-speed">Rotation Speed:</label> <!-- Auto-rotation speed of entire model -->
+                <label for="rotation-speed">Rotation Speed:</label>
                 <div class="control-input-group">
-                    <input type="range" id="rotation-speed" min="0.001" max="0.02" step="0.001" value="0.003">
-                    <input type="number" id="rotation-speed-num" min="0.001" max="0.02" step="0.001" value="0.003">
+                    <input type="range" id="rotation-speed" min="0.001" max="0.02" step="0.001" value="0.002">
+                    <input type="number" id="rotation-speed-num" min="0.001" max="0.02" step="0.001" value="0.002">
                 </div>
             </div>
             <div class="control-group">
-                <label for="easing-zone">Easing Zone:</label> <!-- Smoothness of particle return animation -->
+                <label for="easing-zone">Easing Zone:</label>
                 <div class="control-input-group">
-                    <input type="range" id="easing-zone" min="0.05" max="0.5" step="0.05" value="0.3">
-                    <input type="number" id="easing-zone-num" min="0.05" max="0.5" step="0.05" value="0.3">
+                    <input type="range" id="easing-zone" min="0.05" max="0.5" step="0.05" value="0.45">
+                    <input type="number" id="easing-zone-num" min="0.05" max="0.5" step="0.05" value="0.45">
                 </div>
             </div>
             <div class="control-group">
-                <label for="rotation-min">Rotation Min (degrees):</label> <!-- Minimum rotation angle -->
+                <label for="rotation-min">Rotation Min (degrees):</label>
                 <div class="control-input-group">
                     <input type="range" id="rotation-min" min="-180" max="0" step="5" value="-10">
                     <input type="number" id="rotation-min-num" min="-180" max="0" step="5" value="-10">
                 </div>
             </div>
             <div class="control-group">
-                <label for="rotation-max">Rotation Max (degrees):</label> <!-- Maximum rotation angle -->
+                <label for="rotation-max">Rotation Max (degrees):</label>
                 <div class="control-input-group">
                     <input type="range" id="rotation-max" min="0" max="180" step="5" value="70">
                     <input type="number" id="rotation-max-num" min="0" max="180" step="5" value="70">
@@ -266,10 +282,42 @@
             </div>
 
             <div class="control-group">
-                <label for="tone-mapping-exposure">Tone Mapping Exposure:</label> <!-- HDR brightness/exposure control -->
+                <label for="tone-mapping-exposure">Tone Mapping Exposure:</label>
                 <div class="control-input-group">
                     <input type="range" id="tone-mapping-exposure" min="0.1" max="2.0" step="0.01" value="0.74">
                     <input type="number" id="tone-mapping-exposure-num" min="0.1" max="2.0" step="0.01" value="0.74">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="background-color">Background Color:</label>
+                <div class="control-input-group">
+                    <input type="color" id="background-color" value="#0a0a0a">
+                    <input type="text" id="background-color-hex" placeholder="#0a0a0a" maxlength="7">
+                </div>
+            </div>
+            
+            <!-- TEXT COLOR CONTROLS -->
+            <h3>🎨 Text Colors</h3>
+            <div class="control-group">
+                <label for="primary-text-color">Primary Text (Titles):</label>
+                <div class="control-input-group">
+                    <input type="color" id="primary-text-color" value="#fffffc">
+                    <input type="text" id="primary-text-color-hex" placeholder="#fffffc" maxlength="7">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="secondary-text-color">Secondary Text:</label>
+                <div class="control-input-group">
+                    <input type="color" id="secondary-text-color" value="#cccccc">
+                    <input type="text" id="secondary-text-color-hex" placeholder="#cccccc" maxlength="7">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="accent-text-color">Accent Text:</label>
+                <div class="control-input-group">
+                    <input type="color" id="accent-text-color" value="#d8aa5a">
+                    <input type="text" id="accent-text-color-hex" placeholder="#d8aa5a" maxlength="7">
                 </div>
             </div>
 
@@ -277,39 +325,39 @@
             <h3>💫 Bloom Effects</h3>
             <div class="control-group">
                 <label>
-                    <input type="checkbox" id="bloom-enabled" checked> Enable Bloom <!-- Toggle bloom post-processing -->
+                    <input type="checkbox" id="bloom-enabled" checked> Enable Bloom
                 </label>
             </div>
             <div class="control-group">
-                <label for="bloom-threshold">Threshold:</label> <!-- Brightness level for bloom to activate -->
+                <label for="bloom-threshold">Threshold:</label>
                 <div class="control-input-group">
                     <input type="range" id="bloom-threshold" min="0" max="1" step="0.01" value="0.2">
                     <input type="number" id="bloom-threshold-num" min="0" max="1" step="0.01" value="0.2">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-strength">Strength:</label> <!-- Intensity of bloom effect -->
+                <label for="bloom-strength">Strength:</label>
                 <div class="control-input-group">
-                    <input type="range" id="bloom-strength" min="0" max="3" step="0.1" value="0.8">
-                    <input type="number" id="bloom-strength-num" min="0" max="3" step="0.1" value="0.8">
+                    <input type="range" id="bloom-strength" min="0" max="3" step="0.01" value="0.3">
+                    <input type="number" id="bloom-strength-num" min="0" max="3" step="0.01" value="0.3">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-radius">Radius:</label> <!-- Size/spread of bloom effect -->
+                <label for="bloom-radius">Radius:</label>
                 <div class="control-input-group">
-                    <input type="range" id="bloom-radius" min="0" max="1" step="0.01" value="0.4">
-                    <input type="number" id="bloom-radius-num" min="0" max="1" step="0.01" value="0.4">
+                    <input type="range" id="bloom-radius" min="0" max="1" step="0.01" value="0.15">
+                    <input type="number" id="bloom-radius-num" min="0" max="1" step="0.01" value="0.15">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-direction-x">Direction X:</label> <!-- Horizontal bloom direction bias -->
+                <label for="bloom-direction-x">Direction X:</label>
                 <div class="control-input-group">
                     <input type="range" id="bloom-direction-x" min="0.0" max="1.0" step="0.01" value="0.97">
                     <input type="number" id="bloom-direction-x-num" min="0.0" max="1.0" step="0.01" value="0.97">
                 </div>
             </div>
             <div class="control-group">
-                <label for="bloom-direction-y">Direction Y:</label> <!-- Vertical bloom direction bias -->
+                <label for="bloom-direction-y">Direction Y:</label>
                 <div class="control-input-group">
                     <input type="range" id="bloom-direction-y" min="0.0" max="1.0" step="0.01" value="0.18">
                     <input type="number" id="bloom-direction-y-num" min="0.0" max="1.0" step="0.01" value="0.18">
@@ -317,9 +365,9 @@
             </div>
             <!-- ACTION BUTTONS -->
             <h3>⚙️ Actions</h3>
-            <button id="export-params" class="export-btn">Export Parameters</button> <!-- Save current settings to clipboard -->
-            <button id="reset-params" class="reset-btn">Reset to Defaults</button> <!-- Restore default values -->
-            <button id="clear-models" class="clear-btn">Clear All Models</button> <!-- Remove all loaded models and reset scene -->
+            <button id="export-params" class="export-btn">Export Parameters</button>
+            <button id="reset-params" class="reset-btn">Reset to Defaults</button>
+            <button id="clear-models" class="clear-btn">Clear All Models</button>
         </div>
     </div>
 
@@ -329,7 +377,7 @@
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <p>Loading...</p>
+            <p>One moment please...</p>
         </div>
     </div>
 
@@ -349,46 +397,35 @@
                 
                 <!-- Mobile Navigation (horizontal buttons) -->
                 <div class="mobile-nav" role="navigation" aria-label="Portfolio navigation">
-                    <button class="mobile-nav-btn connect-btn" id="connect-btn">
-                        <span class="btn-icon">🤝</span>
-                        <span class="btn-text">Let's connect!</span>
-                    </button>
-                    <button class="mobile-nav-btn nav-btn" data-page="photography">
-                        <span class="btn-text">Photography</span>
-                    </button>
-                    <button class="mobile-nav-btn nav-btn" data-page="film">
-                        <span class="btn-text">Film</span>
-                    </button>
-                    <button class="mobile-nav-btn nav-btn" data-page="vfx">
-                        <span class="btn-text">VFX</span>
-                    </button>
-                    <button class="mobile-nav-btn nav-btn" data-page="projects">
+                    <a href="/projects/" class="mobile-nav-btn nav-btn" data-page="projects">
                         <span class="btn-text">Projects</span>
-                    </button>
+                    </a>
                     <button class="mobile-nav-btn nav-btn" data-page="about">
                         <span class="btn-text">About</span>
                     </button>
                 </div>
                 
                 <!-- Mobile Social Grid (direct access to social platforms) -->
-                <div class="mobile-social-grid" role="navigation" aria-label="Social media links">
-                    <!-- Social platform buttons will be generated by JavaScript -->
+                <div class="mobile-social-container">
+                    <h2 class="mobile-social-title">Let's connect!</h2>
+                    <div class="mobile-social-grid" role="navigation" aria-label="Social media links">
+                        <!-- Temporary social buttons for testing -->
+                        <a href="https://instagram.com/arturojreal" target="_blank" rel="noopener noreferrer">📸 Instagram</a>
+                        <a href="https://x.com/arturojreal" target="_blank" rel="noopener noreferrer">🐦 X (Twitter)</a>
+                        <a href="https://youtube.com/@arturojreal" target="_blank" rel="noopener noreferrer">📺 YouTube</a>
+                        <a href="https://github.com/arturojreal" target="_blank" rel="noopener noreferrer">💻 GitHub</a>
+                        <a href="https://linkedin.com/in/arturojreal" target="_blank" rel="noopener noreferrer">💼 LinkedIn</a>
+                        <a href="mailto:arturojreal+contact@gmail.com">📧 Email</a>
+                        <a href="https://discord.gg/dsnZ9NFDsQ" target="_blank" rel="noopener noreferrer">🎮 Discord</a>
+                        <a href="https://bsky.app/profile/arturojreal.bsky.social" target="_blank" rel="noopener noreferrer">🌤️ BlueSky</a>
+                    </div>
                 </div>
                 
                 <!-- Desktop Navigation (glass navbar) -->
                 <nav class="main-nav desktop-nav" role="navigation" aria-label="Portfolio navigation">
-                    <button class="nav-btn" data-page="photography" aria-describedby="photo-desc">
-                        Photography
-                    </button>
-                    <button class="nav-btn" data-page="film" aria-describedby="film-desc">
-                        Film
-                    </button>
-                    <button class="nav-btn" data-page="vfx" aria-describedby="vfx-desc">
-                        VFX
-                    </button>
-                    <button class="nav-btn" data-page="projects" aria-describedby="projects-desc">
+                    <a href="/projects/" class="nav-btn" data-page="projects" aria-describedby="projects-desc">
                         Projects
-                    </button>
+                    </a>
                     <button class="nav-btn" data-page="about" aria-describedby="about-desc">
                         About
                     </button>
@@ -396,6 +433,8 @@
                 
                 <!-- Desktop Social Media Links -->
                 <div class="social-links desktop-social" role="navigation" aria-label="Social media links">
+                    <!-- First Row: 6 icons -->
+                    <div class="social-row social-row-1">
                     <a href="https://bsky.app/profile/arturojreal.bsky.social" target="_blank" rel="noopener noreferrer" aria-label="BlueSky" class="social-link">
                         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Bluesky</title><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.018-.276.037-.414.058-2.671-.297-5.569.628-6.383 3.364C.378 17.705 0 22.665 0 23.353c0 .688.139 1.86.902 2.202.659.299 1.664.621 4.3-1.24C7.954 22.373 10.913 18.434 12 16.32c1.087 2.114 4.046 6.053 6.798 7.995 2.636 1.861 3.641 1.539 4.3 1.24.763-.342.902-1.514.902-2.202 0-.688-.378-5.648-.624-6.477-.815-2.736-3.712-3.661-6.383-3.364-.138-.021-.276-.04-.414-.058.14.017.279.036.415.056 2.67.296 5.568-.628 6.383-3.364.246-.829.624-5.789.624-6.479 0-.688-.139-1.86-.902-2.202-.659-.299-1.664-.621-4.3 1.24C16.046 4.747 13.087 8.686 12 10.8Z"/></svg>
                     </a>
@@ -414,6 +453,9 @@
                     <a href="https://instagram.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-link">
                         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Instagram</title><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                     </a>
+                    </div>
+                    <!-- Second Row: 7 icons -->
+                    <div class="social-row social-row-2">
                     <a href="https://ko-fi.com/arturojreal" target="_blank" rel="noopener noreferrer" aria-label="Ko-fi" class="social-link">
                         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Ko-fi</title><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.033 11.596c.049 4.271 3.759 4.825 3.759 4.825s8.665.456 13.888-.062c5.223-.519 6.807-3.505 6.807-3.505s.468-4.533-.584-9.059zM5.723 12.468c-.79.001-1.533.266-2.101.75-.568.484-.91 1.146-.967 1.875-.11 1.411.112 2.734.112 2.734.652-.648 1.49-1.018 2.378-1.05.888-.032 1.756.283 2.459.895.703.612 1.178 1.473 1.347 2.442.169.969-.044 1.979-.603 2.868.235.023.464.034.693.034.23 0 .459-.011.693-.034-.559-.889-.772-1.899-.603-2.868.169-.969.644-1.83 1.347-2.442.703-.612 1.571-.927 2.459-.895.888.032 1.726.402 2.378 1.05 0 0 .222-1.323.112-2.734-.057-.729-.399-1.391-.967-1.875a3.635 3.635 0 00-2.101-.75c-.846 0-1.664.311-2.31.878-.645.567-1.076 1.35-1.217 2.21-.141-.86-.572-1.643-1.217-2.21-.646-.567-1.464-.878-2.31-.878z"/></svg>
                     </a>
@@ -435,6 +477,7 @@
                     <a href="https://youtube.com/@arturojreal" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link">
                         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                     </a>
+                    </div>
                 </div>
                 
                 <!-- Screen Reader Descriptions -->
@@ -456,7 +499,7 @@
         <!-- Photography Page -->
         <section id="photography-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>My photography</h1>
             </header>
             
@@ -468,7 +511,7 @@
         <!-- Film Page -->
         <section id="film-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>My films and videos</h1>
             </header>
             
@@ -480,7 +523,7 @@
         <!-- VFX Page -->
         <section id="vfx-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>My 3D and VFX work</h1>
             </header>
             
@@ -492,18 +535,81 @@
         <!-- Projects Page -->
         <section id="projects-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>Projects I've worked on</h1>
             </header>
-            <div class="portfolio-grid" role="list" aria-label="Project items">
-                <!-- Intentionally left empty for now -->
+            <div class="projects-grid" role="list" aria-label="Project items">
+
+                <!-- Archivist -->
+                <a class="project-card" href="/archivist/" role="listitem">
+                    <div class="project-card-header" style="background: linear-gradient(135deg, #7a5210 0%, #b07d2a 50%, #1a1207 100%);">
+                        🗃️
+                    </div>
+                    <div class="project-card-body">
+                        <div class="project-platform-tags">
+                            <span class="project-platform-tag">iOS</span>
+                            <span class="project-platform-tag">Apple Intelligence</span>
+                        </div>
+                        <h3 class="project-card-name">Archivist</h3>
+                        <p class="project-card-desc">Capture-first professional memory bank. Record work stories and let on-device AI structure them into archive entries, memoirs, and resume bullets.</p>
+                        <span class="project-card-link" style="color: #f5c97a;">
+                            View project
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 11L11 1M11 1H5M11 1v6"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
+                <!-- Snapbooth -->
+                <a class="project-card" href="/snapbooth/" role="listitem">
+                    <div class="project-card-header" style="background: linear-gradient(135deg, #2d1b6b 0%, #6b38d4 50%, #0d0a1a 100%);">
+                        📸
+                    </div>
+                    <div class="project-card-body">
+                        <div class="project-platform-tags">
+                            <span class="project-platform-tag">Web</span>
+                            <span class="project-platform-tag">Zero-install</span>
+                        </div>
+                        <h3 class="project-card-name">Snapbooth</h3>
+                        <p class="project-card-desc">Browser-based photobooth for events and gatherings. Guests open a URL, take photos, and get a shareable link instantly — no app, no account.</p>
+                        <span class="project-card-link" style="color: #d0bcff;">
+                            View project
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 11L11 1M11 1H5M11 1v6"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
+                <!-- Speranza Hub -->
+                <a class="project-card" href="/speranza_hub/" role="listitem">
+                    <div class="project-card-header" style="background: linear-gradient(135deg, #0f3a55 0%, #2a7aaa 50%, #050e17 100%);">
+                        🎮
+                    </div>
+                    <div class="project-card-body">
+                        <div class="project-platform-tags">
+                            <span class="project-platform-tag">iOS</span>
+                            <span class="project-platform-tag">WidgetKit</span>
+                        </div>
+                        <h3 class="project-card-name">Speranza Hub</h3>
+                        <p class="project-card-desc">Free ARC Raiders companion app with home screen widgets. Track live game events, map conditions, and rotations across all five maps — at a glance.</p>
+                        <span class="project-card-link" style="color: #6ec6f5;">
+                            View project
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 11L11 1M11 1H5M11 1v6"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
             </div>
         </section>
 
         <!-- About Page -->
         <section id="about-page" class="page portfolio-page" role="main">
             <header class="page-header">
-                <button class="back-btn" aria-label="Back to home">← Back</button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>About me</h1>
             </header>
             <div class="about-wrapper">
@@ -523,9 +629,7 @@
         <!-- Mobile Social Connect Page -->
         <section id="connect-page" class="page portfolio-page hidden" role="main">
             <header class="page-header">
-                <button class="back-btn" onclick="navigateToPage('home')">
-                    <span aria-hidden="true">←</span> Back to Home
-                </button>
+                <button class="back-btn" aria-label="Back to home" onclick="navigateToPage('home')">← Back</button>
                 <h1>Let's connect!</h1>
             </header>
             <div class="connect-wrapper">

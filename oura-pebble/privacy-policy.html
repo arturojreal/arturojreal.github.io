@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Pebble Oura Stats</title>
+  <meta name="description" content="Privacy Policy for Pebble Oura Stats, a Pebble watchface that displays Oura Ring health metrics.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:              #080f0c;
+      --bg-card:         rgba(14, 28, 22, 0.65);
+      --bg-card-hover:   rgba(20, 38, 30, 0.75);
+      --text-primary:    #fffffc;
+      --text-secondary:  #b4ccbe;
+      --text-muted:      #6a9278;
+      --accent:          #4ecb8d;
+      --accent-deep:     #2a8a5e;
+      --accent-deeper:   #0f4a32;
+      --border:          rgba(78, 203, 141, 0.07);
+      --border-accent:   rgba(78, 203, 141, 0.22);
+      --radius-card:     1.5rem;
+      --radius-pill:     9999px;
+      --ease:            cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── GRAIN ──────────────────────────────────────────────── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── BACKGROUND BLURS ───────────────────────────────────── */
+    .bg-blur {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(120px);
+      z-index: 0;
+    }
+    .bg-blur-1 {
+      width: 50vw; height: 50vw;
+      top: -10%; right: -10%;
+      background: rgba(42, 138, 94, 0.15);
+      opacity: 0.5;
+    }
+    .bg-blur-2 {
+      width: 45vw; height: 45vw;
+      bottom: -10%; left: -5%;
+      background: rgba(15, 74, 50, 0.12);
+      opacity: 0.4;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 0;
+      margin-bottom: 64px;
+    }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: color 200ms var(--ease);
+    }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 16px; height: 16px; }
+
+    .nav-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.7;
+      text-decoration: none;
+    }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 64px;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-pill);
+      padding: 5px 14px;
+      margin-bottom: 24px;
+      background: rgba(78, 203, 141, 0.06);
+    }
+
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 28px;
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 600px;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .meta-item {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    .meta-item strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* ─── CARD ───────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px 40px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* ─── POLICY SECTIONS ────────────────────────────────────── */
+    .policy-section {
+      margin-bottom: 32px;
+    }
+
+    .policy-section h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .policy-section h2 .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(78, 203, 141, 0.08);
+      border: 1px solid var(--border-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .policy-section p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+    .policy-section p:last-child { margin-bottom: 0; }
+
+    .policy-section ul {
+      list-style: none;
+      margin: 12px 0 14px;
+    }
+
+    .policy-section ul li {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      padding: 5px 0 5px 20px;
+      position: relative;
+    }
+
+    .policy-section ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.45;
+    }
+
+    .policy-section strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .policy-section a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-accent);
+      transition: border-color 150ms var(--ease), opacity 150ms var(--ease);
+    }
+    .policy-section a:hover { opacity: 0.8; border-color: var(--accent); }
+
+    /* ─── HIGHLIGHT BOX ──────────────────────────────────────── */
+    .highlight-box {
+      background: rgba(78, 203, 141, 0.06);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0 0;
+    }
+
+    .highlight-box p {
+      font-size: 0.875rem !important;
+      color: var(--text-secondary) !important;
+      margin: 0 !important;
+    }
+
+    .highlight-box strong {
+      color: var(--accent) !important;
+    }
+
+    /* ─── DIVIDERS ───────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 56px 0;
+    }
+
+    .inner-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* ─── CONTACT CARD ───────────────────────────────────────── */
+    .contact-card {
+      text-align: center;
+      padding: 52px 40px;
+      background: linear-gradient(135deg, rgba(42,138,94,0.14) 0%, rgba(14,28,22,0.65) 60%);
+      border-color: var(--border-accent);
+    }
+
+    .contact-card h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
+    }
+
+    .contact-card p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 440px;
+      margin: 0 auto 28px;
+    }
+
+    .contact-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      background: rgba(78, 203, 141, 0.06);
+      transition: background 200ms var(--ease), transform 150ms var(--ease);
+    }
+    .btn-ghost:hover {
+      background: rgba(78, 203, 141, 0.12);
+      transform: translateY(-1px);
+    }
+    .btn-ghost svg { width: 15px; height: 15px; }
+
+    /* ─── FADE IN ────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease) forwards;
+    }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.15s; }
+    .fade-up:nth-child(3) { animation-delay: 0.25s; }
+    .fade-up:nth-child(4) { animation-delay: 0.35s; }
+    .fade-up:nth-child(5) { animation-delay: 0.45s; }
+
+    /* ─── MOBILE ─────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .page-wrap { padding: 0 20px 64px; }
+      nav { margin-bottom: 48px; }
+      .hero-title { font-size: 2.5rem; }
+      .card { padding: 28px 24px; }
+      .contact-card { padding: 36px 24px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+  <div class="bg-blur bg-blur-1"></div>
+  <div class="bg-blur bg-blur-2"></div>
+
+  <div class="page-wrap">
+
+    <!-- NAV -->
+    <nav>
+      <a href="/" class="nav-back">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 12L6 8l4-4"/>
+        </svg>
+        Arturo J. Real
+      </a>
+      <a href="/oura-pebble/" class="nav-tag">Oura &lt;&gt; Pebble</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="fade-up">
+        <span class="hero-eyebrow">Pebble Watchface</span>
+      </div>
+      <h1 class="hero-title fade-up">Privacy Policy</h1>
+      <p class="hero-description fade-up">
+        Pebble Oura Stats is designed to minimize how much data is stored and to give you
+        control over access. Your health data is sensitive — here's exactly how it's handled.
+      </p>
+      <div class="meta-row fade-up">
+        <span class="meta-item"><strong>App:</strong> Pebble Oura Stats</span>
+        <span class="meta-item"><strong>Platform:</strong> Pebble / Rebble</span>
+        <span class="meta-item"><strong>Last updated:</strong> December 12, 2025</span>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- POLICY CONTENT -->
+    <div class="card fade-up">
+
+      <div class="policy-section">
+        <h2><span class="icon">📋</span>1. Introduction</h2>
+        <p>
+          This Privacy Policy describes how Pebble Oura Stats ("Application", "we", "us", or "our")
+          handles information when you use the Application with your Oura Ring and Pebble smartwatch.
+        </p>
+        <p>
+          By installing or using the Application, you agree to the collection and use of information
+          in accordance with this Privacy Policy. If you do not agree, do not use the Application.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">🗃️</span>2. Information We Collect</h2>
+        <p><strong>Information from Oura</strong></p>
+        <p>When you connect the Application to your Oura account, Oura's API may provide:</p>
+        <ul>
+          <li>Sleep information such as duration, timing, and quality metrics.</li>
+          <li>Activity metrics such as activity level and movement.</li>
+          <li>Readiness-related scores that Oura calculates.</li>
+          <li>Heart-related metrics like resting heart rate and heart rate variability, when available.</li>
+          <li>Other related metrics that Oura's API may make available for display.</li>
+        </ul>
+        <div class="highlight-box">
+          <p><strong>Note:</strong> Your Oura password is never handled or stored by the Application. Authentication uses Oura's OAuth 2.0 flow, which is managed by Oura's own systems.</p>
+        </div>
+
+        <p style="margin-top: 20px;"><strong>Device Information</strong></p>
+        <p>
+          The Application may access basic information about your device to function correctly, such as
+          device type (Pebble smartwatch and paired phone, if applicable), operating system and version,
+          and technical identifiers used by Pebble/Rebble as needed for communication.
+        </p>
+
+        <p><strong>Usage Information</strong></p>
+        <p>
+          To understand how the Application is used and to improve stability, we may process which
+          features are used, frequency of use, and error and crash information. This information is
+          used primarily to fix bugs, improve performance, and maintain the Application.
+        </p>
+
+        <p><strong>Information You Provide Directly</strong></p>
+        <p>
+          If you contact the developer (for example through GitHub issues or a website contact form),
+          you may provide contact details, a description of an issue or feedback, or other information
+          you voluntarily include in your message.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">⚙️</span>3. How We Use Information</h2>
+        <p>Information may be used for:</p>
+        <ul>
+          <li>Displaying Oura metrics on your Pebble device.</li>
+          <li>Maintaining, improving, and troubleshooting the Application.</li>
+          <li>Responding to support requests or feedback.</li>
+          <li>Meeting legal obligations, where applicable.</li>
+        </ul>
+        <p>
+          Information from Oura is used only to show your data within the Application and to keep
+          values up to date.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">💾</span>4. Data Storage and Retention</h2>
+        <p>
+          <strong>Local Storage:</strong> Pebble Oura Stats primarily operates on your device. Health
+          data from Oura is retrieved and then displayed or cached locally as needed for functionality
+          and performance. There is no separate, centralized database maintained solely for storing
+          user health data.
+        </p>
+        <p>
+          <strong>Access Tokens and Caching:</strong> To communicate with Oura's API, the Application
+          may store an OAuth access token and limited state data. This information is kept only as long
+          as necessary to maintain the authorized connection and provide the service.
+        </p>
+        <p>
+          <strong>Retention Period:</strong> Data is kept only as long as needed for the purposes
+          described in this policy. When you uninstall the Application or revoke access in your Oura
+          account, any locally cached data and tokens related to the Application are removed or rendered
+          unusable.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">🔒</span>5. Data Security</h2>
+        <p>
+          Reasonable technical and organizational measures are used to help protect information, including:
+        </p>
+        <ul>
+          <li>Use of Oura's OAuth 2.0 authentication, so passwords are never handled by the Application.</li>
+          <li>Communication with Oura's API over encrypted connections (HTTPS/TLS).</li>
+          <li>Limiting stored data to what is necessary for functionality.</li>
+        </ul>
+        <p>
+          However, no method of transmission or storage can be guaranteed completely secure. You use
+          the Application at your own risk and are encouraged to use device-level security where available.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">🔗</span>6. Third-Party Services</h2>
+        <p>
+          <strong>Oura:</strong> The Application relies on Oura's API to access and display your
+          metrics. Oura is responsible for its own data practices, governed by Oura's Privacy Policy
+          and Terms, which you can review on their official website.
+        </p>
+        <p>
+          <strong>Pebble / Rebble:</strong> The Application runs on the Pebble/Rebble ecosystem,
+          which may process limited device and usage data necessary for app distribution and operation.
+          These platforms have their own terms and privacy policies.
+        </p>
+        <p>
+          <strong>Sharing with Third Parties:</strong> The Application does not sell or rent your health
+          information. Information may be shared only when required by law, when necessary to enforce
+          Terms of Service or protect rights or safety, or with service providers who assist with
+          hosting or technical operations under confidentiality obligations, if such providers are used.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">✋</span>7. Your Choices and Rights</h2>
+        <p>
+          <strong>Revoking Access:</strong> You can revoke the Application's access to your Oura data
+          at any time by managing connected apps in your Oura account settings or by uninstalling the
+          Application from your Pebble device. Once revoked, the Application cannot retrieve new data
+          from Oura.
+        </p>
+        <p>
+          <strong>Data Deletion:</strong> Uninstalling the Application removes local data and tokens
+          associated with it on your device. Because the Application does not maintain a separate
+          persistent cloud database of your health data, there is typically no additional deletion
+          step required.
+        </p>
+        <p>
+          <strong>Rights Under Certain Laws:</strong> Depending on your location, you may have rights
+          under data protection laws (for example, GDPR in the EU or CCPA in California) such as the
+          right to request access to, correction of, or deletion of personal data, the right to object
+          to or restrict processing, or the right to lodge a complaint with a data protection authority.
+          To exercise such rights, contact the developer via the channels below.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">👤</span>8. Children's Privacy</h2>
+        <p>
+          The Application is not intended for children under 13 years of age (or the minimum age of
+          digital consent in your jurisdiction). The Application does not knowingly collect information
+          from children. If it becomes known that information from a child has been collected
+          inadvertently, reasonable steps will be taken to delete it and disable further use.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">🔔</span>9. Data Breach</h2>
+        <p>
+          If a security incident occurs that is likely to result in a risk to your rights and freedoms,
+          reasonable efforts will be made to notify affected users and, where required, applicable
+          authorities. Such notice will describe, when possible, what happened, the type of data
+          involved, and steps taken in response.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">🌍</span>10. International Data Transfers</h2>
+        <p>
+          Depending on infrastructure used by Oura, Pebble/Rebble, or any supporting services, your
+          information may be processed in countries other than your own. By using the Application, you
+          acknowledge that your data may be transferred and processed outside of your country, and that
+          different data protection laws may apply.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">📝</span>11. Changes to This Privacy Policy</h2>
+        <p>
+          This Privacy Policy may be updated from time to time. The "Last Updated" date at the top
+          shows the most recent revision. Continued use of the Application after changes are posted
+          means you accept the updated policy.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">🏥</span>12. Important Health Data Note</h2>
+        <p>
+          Health and activity metrics are sensitive. The Application is designed to minimize how much
+          data is stored and to give you control over access. The Application does not create or
+          interpret medical diagnoses. For any concerns about the meaning of your health data, consult
+          a medical professional.
+        </p>
+      </div>
+
+      <div class="inner-divider"></div>
+
+      <div class="policy-section">
+        <h2><span class="icon">📬</span>13. Contact</h2>
+        <p>
+          If you have questions about this Privacy Policy or how your information is handled, you can
+          contact the developer through:
+        </p>
+        <ul>
+          <li>Website: <a href="https://arturojreal.com" target="_blank" rel="noopener noreferrer">arturojreal.com</a></li>
+          <li>GitHub issues: <a href="https://github.com/arturojreal/pebble-oura-stats/issues" target="_blank" rel="noopener noreferrer">github.com/arturojreal/pebble-oura-stats/issues</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CONTACT -->
+    <section class="fade-up">
+      <div class="card contact-card">
+        <h2>Questions about privacy?</h2>
+        <p>
+          If you have any questions or concerns about this privacy policy or how Pebble Oura Stats
+          handles your data, reach out directly.
+        </p>
+        <div class="contact-buttons">
+          <a href="https://arturojreal.com" class="btn-ghost" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 16L16 2M16 2H8M16 2v8"/>
+            </svg>
+            arturojreal.com
+          </a>
+          <a href="https://github.com/arturojreal/pebble-oura-stats/issues" class="btn-ghost" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 16L16 2M16 2H8M16 2v8"/>
+            </svg>
+            GitHub Issues
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

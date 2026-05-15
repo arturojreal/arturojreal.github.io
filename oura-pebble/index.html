@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oura &lt;&gt; Pebble Watchface — Arturo J. Real</title>
+  <meta name="description" content="Pebble Oura Stats is a watchface that brings Oura Ring health insights — sleep, activity, readiness, and heart metrics — directly to your Pebble smartwatch.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:              #080f0c;
+      --bg-card:         rgba(14, 28, 22, 0.65);
+      --bg-card-hover:   rgba(20, 38, 30, 0.75);
+      --text-primary:    #fffffc;
+      --text-secondary:  #b4ccbe;
+      --text-muted:      #6a9278;
+      --accent:          #4ecb8d;
+      --accent-deep:     #2a8a5e;
+      --accent-deeper:   #0f4a32;
+      --border:          rgba(78, 203, 141, 0.07);
+      --border-accent:   rgba(78, 203, 141, 0.22);
+      --radius-card:     1.5rem;
+      --radius-pill:     9999px;
+      --ease:            cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── GRAIN ──────────────────────────────────────────────── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── BACKGROUND BLURS ───────────────────────────────────── */
+    .bg-blur {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(120px);
+      z-index: 0;
+    }
+    .bg-blur-1 {
+      width: 55vw; height: 55vw;
+      top: -15%; right: -10%;
+      background: rgba(42, 138, 94, 0.18);
+      opacity: 0.5;
+    }
+    .bg-blur-2 {
+      width: 45vw; height: 45vw;
+      bottom: -10%; left: -5%;
+      background: rgba(15, 74, 50, 0.15);
+      opacity: 0.4;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 0;
+      margin-bottom: 64px;
+    }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: color 200ms var(--ease);
+    }
+    .nav-back:hover { color: var(--text-primary); }
+    .nav-back svg { width: 16px; height: 16px; }
+
+    .nav-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.7;
+      text-decoration: none;
+    }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 64px;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-pill);
+      padding: 5px 14px;
+      margin-bottom: 24px;
+      background: rgba(78, 203, 141, 0.06);
+    }
+
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .hero-subtitle {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: var(--accent);
+      opacity: 0.8;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 600px;
+    }
+
+    /* ─── SECTION LABEL ──────────────────────────────────────── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* ─── CARD ───────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px 40px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: background 300ms var(--ease), border-color 300ms var(--ease);
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+    }
+
+    /* ─── HOW IT WORKS ───────────────────────────────────────── */
+    .how-section {
+      margin-bottom: 48px;
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .how-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 28px 24px;
+      transition: border-color 250ms var(--ease);
+    }
+    .how-item:hover { border-color: var(--border-accent); }
+
+    .how-number {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-deep);
+      opacity: 0.45;
+      line-height: 1;
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+    }
+
+    .how-item h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .how-item p {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─── FEATURES ───────────────────────────────────────────── */
+    .features-section {
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .feature-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 24px;
+      transition: border-color 250ms var(--ease);
+    }
+    .feature-item:hover { border-color: var(--border-accent); }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .feature-item h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-item p {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─── ABOUT ──────────────────────────────────────────────── */
+    .about-section {
+      margin-bottom: 48px;
+    }
+
+    .about-card p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .about-card p:last-of-type { margin-bottom: 0; }
+
+    .about-card a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-accent);
+      transition: border-color 150ms var(--ease), opacity 150ms var(--ease);
+    }
+    .about-card a:hover { opacity: 0.8; border-color: var(--accent); }
+
+    .about-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px;
+    }
+
+    /* ─── CTA ────────────────────────────────────────────────── */
+    .cta-section {
+      margin-bottom: 0;
+    }
+
+    .cta-card {
+      text-align: center;
+      padding: 56px 40px;
+      background: linear-gradient(135deg, rgba(42,138,94,0.18) 0%, rgba(14,28,22,0.65) 60%);
+      border-color: var(--border-accent);
+    }
+
+    .cta-card h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+      margin-bottom: 14px;
+    }
+
+    .cta-card p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 460px;
+      margin: 0 auto 36px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #080f0c;
+      background: var(--accent);
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      box-shadow: 0 12px 32px -6px rgba(42, 138, 94, 0.5);
+      transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), background 200ms var(--ease);
+    }
+    .btn-primary:hover {
+      background: #7ddcab;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 18px 40px -6px rgba(42, 138, 94, 0.65);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary svg { width: 16px; height: 16px; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      background: rgba(78, 203, 141, 0.06);
+      transition: background 200ms var(--ease), transform 150ms var(--ease);
+    }
+    .btn-ghost:hover {
+      background: rgba(78, 203, 141, 0.12);
+      transform: translateY(-1px);
+    }
+    .btn-ghost svg { width: 14px; height: 14px; }
+
+    /* ─── DIVIDERS ───────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 56px 0;
+    }
+
+    /* ─── FADE IN ────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease) forwards;
+    }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.15s; }
+    .fade-up:nth-child(3) { animation-delay: 0.25s; }
+    .fade-up:nth-child(4) { animation-delay: 0.35s; }
+    .fade-up:nth-child(5) { animation-delay: 0.45s; }
+
+    /* ─── MOBILE ─────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .page-wrap { padding: 0 20px 64px; }
+      nav { margin-bottom: 48px; }
+      .hero-title { font-size: 3rem; }
+      .card { padding: 28px 24px; }
+      .cta-card { padding: 40px 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .how-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+  <div class="bg-blur bg-blur-1"></div>
+  <div class="bg-blur bg-blur-2"></div>
+
+  <div class="page-wrap">
+
+    <!-- NAV -->
+    <nav>
+      <a href="/" class="nav-back">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 12L6 8l4-4"/>
+        </svg>
+        Arturo J. Real
+      </a>
+      <a href="/projects/" class="nav-tag">Projects</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="fade-up">
+        <span class="hero-eyebrow">Pebble · Rebble · Oura</span>
+      </div>
+      <h1 class="hero-title fade-up">Oura &lt;&gt; Pebble</h1>
+      <p class="hero-subtitle fade-up">Display Your Health Metrics on Your Wrist</p>
+      <p class="hero-description fade-up">
+        Pebble Oura Stats is a watchface application that brings Oura Ring health insights directly
+        to a Pebble smartwatch. It shows sleep, activity, readiness, and heart-related metrics so
+        users can quickly check key information without opening the Oura app.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section fade-up">
+      <p class="section-label">How it works</p>
+      <div class="how-grid">
+        <div class="how-item">
+          <div class="how-number">01</div>
+          <h3>Install</h3>
+          <p>Install the watchface from the Pebble/Rebble app store onto your Pebble device.</p>
+        </div>
+        <div class="how-item">
+          <div class="how-number">02</div>
+          <h3>Authorize</h3>
+          <p>Authorize the app to access Oura data using Oura's secure OAuth login flow. Your credentials are never seen or stored by the app.</p>
+        </div>
+        <div class="how-item">
+          <div class="how-number">03</div>
+          <h3>Display</h3>
+          <p>Once connected, the watchface retrieves and displays your Oura metrics directly on your Pebble.</p>
+        </div>
+        <div class="how-item">
+          <div class="how-number">04</div>
+          <h3>Stay in sync</h3>
+          <p>The watchface periodically updates to keep information in sync with your latest Oura data throughout the day.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FEATURES -->
+    <section class="features-section fade-up">
+      <p class="section-label">Key features</p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <span class="feature-icon">🔄</span>
+          <h3>Real-time data sync</h3>
+          <p>Automatically pulls the latest data from your Oura Ring to keep your wrist display current.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">😴</span>
+          <h3>Sleep metrics</h3>
+          <p>Duration and quality at a glance — understand how last night's sleep is shaping your day.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">⚡</span>
+          <h3>Daily readiness</h3>
+          <p>Your readiness score based on recovery and activity, so you know how to approach the day.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🏃</span>
+          <h3>Activity information</h3>
+          <p>Daily activity data to help understand movement patterns and progress toward your goals.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">❤️</span>
+          <h3>Heart-related metrics</h3>
+          <p>Resting heart rate and heart rate variability when available from your Oura Ring data.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔋</span>
+          <h3>Battery-conscious</h3>
+          <p>Designed to minimize impact on Pebble battery life while keeping your data up to date.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ABOUT / PRIVACY -->
+    <section class="about-section fade-up">
+      <p class="section-label">Data privacy &amp; security</p>
+      <div class="card about-card">
+        <p>
+          Your Oura data is sensitive and is treated accordingly. Authentication uses Oura's OAuth 2.0
+          flow, and your Oura password is never seen or stored by Pebble Oura Stats.
+        </p>
+        <p>
+          Health metrics are retrieved from the Oura API using secure, encrypted connections (HTTPS/TLS),
+          and data is used only to display information on your Pebble. No unnecessary centralized storage
+          of health data is performed beyond what is needed to provide the service.
+        </p>
+        <p>
+          For full details on how data is handled and what your rights are, please review the Terms of
+          Service and Privacy Policy.
+        </p>
+
+        <div class="about-links">
+          <a href="/oura-pebble/terms-of-service.html" class="btn-ghost" style="padding: 10px 20px; font-size: 0.875rem;">
+            Terms of Service
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12L12 2M12 2H6M12 2v6"/>
+            </svg>
+          </a>
+          <a href="/oura-pebble/privacy-policy.html" class="btn-ghost" style="padding: 10px 20px; font-size: 0.875rem;">
+            Privacy Policy
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12L12 2M12 2H6M12 2v6"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="tech-tags">
+          <span class="tag">Pebble SDK</span>
+          <span class="tag">C</span>
+          <span class="tag">Oura API</span>
+          <span class="tag">OAuth 2.0</span>
+          <span class="tag">Rebble</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CTA -->
+    <section class="cta-section fade-up">
+      <div class="card cta-card">
+        <h2>Get Oura stats on your wrist</h2>
+        <p>
+          Install Pebble Oura Stats from the Pebble/Rebble app store, connect your Oura account,
+          and start viewing your health metrics at a glance.
+        </p>
+        <div class="cta-buttons">
+          <a href="https://apps.rebble.io/en_US/application/6899705f76f9e4000ad53ad5?section=watchfaces" class="btn-primary" target="_blank" rel="noopener noreferrer">
+            Get on Rebble
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 16L16 2M16 2H8M16 2v8"/>
+            </svg>
+          </a>
+          <a href="https://discord.gg/dsnZ9NFDsQ" class="btn-ghost" target="_blank" rel="noopener noreferrer">
+            Support on Discord
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12L12 2M12 2H6M12 2v6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
