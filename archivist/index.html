@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Archivist — Arturo J. Real</title>
-  <meta name="description" content="Archivist is a capture-first professional memory bank for iOS. Record work stories and let Apple Intelligence structure them into archive entries, memoirs, and resume bullets — entirely on your device.">
+  <meta name="description" content="Archivist is a capture-first professional memory bank for iOS. Record work stories by voice or text and let on-device or cloud AI structure them into memoir paragraphs, resume bullets, and skill tags — stored locally on your device.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -233,8 +233,12 @@
 
     .features-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
+    }
+
+    @media (max-width: 720px) {
+      .features-grid { grid-template-columns: 1fr 1fr; }
     }
 
     .feature-item {
@@ -437,13 +441,13 @@
     <!-- HERO -->
     <section class="hero">
       <div class="fade-up">
-        <span class="hero-eyebrow">iOS · Apple Intelligence</span>
+        <span class="hero-eyebrow">iOS 26.2 · On-Device &amp; Cloud AI</span>
       </div>
       <h1 class="hero-title fade-up">Archivist</h1>
       <p class="hero-description fade-up">
-        A capture-first professional memory bank. Record a work story in moments,
-        and let Apple Intelligence structure it into a lasting archive entry —
-        with memoir paragraphs and resume bullets ready to use, entirely on your device.
+        A capture-first professional memory bank. Record work stories by voice or text,
+        and let on-device or cloud AI structure them into memoir paragraphs, resume bullets,
+        and skill tags — all stored locally on your device.
       </p>
     </section>
 
@@ -456,22 +460,22 @@
         <div class="how-item">
           <div class="how-number">01</div>
           <h3>Capture</h3>
-          <p>Record a work story in your own words. No formatting, no structure needed — just the raw experience.</p>
+          <p>Record by voice or text. Quick Capture for raw thoughts; Guided Capture walks you through a four-step form. Conversation starters help when you're stuck.</p>
         </div>
         <div class="how-item">
           <div class="how-number">02</div>
           <h3>AI structures</h3>
-          <p>Apple Intelligence processes your story on-device, extracting context, impact, and key details.</p>
+          <p>On-device or cloud AI extracts company, role, a memoir paragraph, resume bullets, skill tags, and an impact rating — without inventing any details.</p>
         </div>
         <div class="how-item">
           <div class="how-number">03</div>
-          <h3>Archive entry</h3>
-          <p>A clean, structured entry is created: situation, actions taken, outcome, and skills demonstrated.</p>
+          <h3>Browse &amp; enrich</h3>
+          <p>Stories are grouped by role and company. Fill Gaps resurfaces incomplete entries. Follow-Up Questions deepen any memoir with AI-generated prompts.</p>
         </div>
         <div class="how-item">
           <div class="how-number">04</div>
           <h3>Export ready</h3>
-          <p>Pull polished memoir paragraphs or resume bullets directly from your archive, whenever you need them.</p>
+          <p>Pull memoir paragraphs or resume bullets from any entry. Export the full archive as JSON or Markdown. Full backup and restore included.</p>
         </div>
       </div>
     </section>
@@ -480,27 +484,37 @@
 
     <!-- FEATURES -->
     <section class="features-section fade-up">
-      <p class="section-label">Built different</p>
+      <p class="section-label">What's inside</p>
       <div class="features-grid">
         <div class="feature-item">
-          <span class="feature-icon">🧠</span>
-          <h3>On-device AI</h3>
-          <p>Powered by Apple Intelligence — all processing happens locally. Your stories never leave your device by default.</p>
+          <span class="feature-icon">🗣️</span>
+          <h3>Voice &amp; text capture</h3>
+          <p>Live waveform recording with real-time transcription. Or type. Switch modes mid-session with a toggle.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🤖</span>
+          <h3>Dual-provider AI</h3>
+          <p>Apple Foundation Models run fully on-device by default. Bring your own Anthropic key to use Claude when you need more power.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🗂️</span>
+          <h3>Role-based archive</h3>
+          <p>Stories grouped by company and role with stats, search, swipe-delete, and long-press rename.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔍</span>
+          <h3>Fill Gaps</h3>
+          <p>A dedicated tab surfaces incomplete stories. Ten rotating prompts stimulate recall; voice or text responses polish them into full memoirs.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📅</span>
+          <h3>Work Log</h3>
+          <p>Calendar-based daily activity log. Set a job description to extract tag vocabulary, then tag entries and browse by tag across all time.</p>
         </div>
         <div class="feature-item">
           <span class="feature-icon">🔒</span>
-          <h3>Privacy-first</h3>
-          <p>No accounts. No analytics. No cloud backend. What you capture stays with you.</p>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">🗃️</span>
-          <h3>Professional memory</h3>
-          <p>Build a living archive of your career — projects, wins, lessons, and the stories behind them.</p>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">✍️</span>
-          <h3>Dual export</h3>
-          <p>One story, two outputs. Generate memoir-style reflections or tight resume bullets from the same entry.</p>
+          <h3>Local-first privacy</h3>
+          <p>No accounts. No analytics. SwiftData on-device. API keys in the Keychain. Nothing leaves your device unless you choose a cloud provider or export.</p>
         </div>
       </div>
     </section>
@@ -518,24 +532,30 @@
           and memory fades fast.
         </p>
         <p>
-          The app is designed to remove every possible friction from the act of capturing.
-          You don't need to structure anything — just describe what happened. Apple Intelligence
-          handles the extraction, turning a rough narrative into a STAR-formatted archive entry
-          that's immediately useful.
+          The app is built around a single principle: capture should cost almost nothing.
+          You don't need to structure anything — just describe what happened, by voice or text.
+          The AI handles extraction, turning a rough narrative into a memoir paragraph, resume
+          bullets, and skill tags with an impact rating. Stories are organized by role and company,
+          searchable, and exportable as JSON or Markdown.
         </p>
         <p>
-          For users who want to extend the AI capabilities beyond what's on-device, Archivist
-          supports bring-your-own API key for providers like OpenAI and Anthropic — keeping
-          the architecture open without compromising the default privacy model.
+          Beyond capture, Archivist includes a Fill Gaps tab that resurfaces incomplete entries
+          and helps you enrich them, a Work Log for daily activity, and a Research Import wizard
+          for pulling structured data from external AI tools. The default AI is fully on-device
+          via Apple Foundation Models; bring your own Anthropic key to use Claude when you want
+          a higher quality tier.
         </p>
 
         <div class="tech-tags">
-          <span class="tag">Swift</span>
+          <span class="tag">Swift 6</span>
           <span class="tag">SwiftUI</span>
-          <span class="tag">Apple Intelligence</span>
+          <span class="tag">SwiftData</span>
           <span class="tag">Foundation Models</span>
-          <span class="tag">On-device AI</span>
-          <span class="tag">iOS</span>
+          <span class="tag">Claude</span>
+          <span class="tag">AVFoundation</span>
+          <span class="tag">SFSpeechRecognizer</span>
+          <span class="tag">Keychain</span>
+          <span class="tag">iOS 26.2</span>
         </div>
       </div>
     </section>
